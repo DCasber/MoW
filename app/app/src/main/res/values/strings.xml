@@ -2,5 +2,8 @@
     <string name="app_name">appMoW</string>
     <string name="misTareas">Mis Tareas</string>
     <string name="labelFecha">Fecha:</string>
-    <string name="alarma">Alarma:</string>
+    <string name="labelAlarma">Alarma:</string>
+    <string name="labelTransporte">Transporte:</string>
+    <string name="labelMiUbicación">Mi ubicación</string>
+    <string name="labelUbicaciónTarea">Ubicación de la tarea</string>
 </resources>
