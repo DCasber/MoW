@@ -69,7 +69,7 @@
         app:layout_constraintVertical_bias="0.156" />
 
     <TextView
-        android:id="@+id/fechaTarea2"
+        android:id="@+id/alarmaTarea"
         android:layout_width="107dp"
         android:layout_height="34dp"
         app:layout_constraintBottom_toBottomOf="parent"
@@ -80,7 +80,7 @@
         app:layout_constraintVertical_bias="0.236" />
 
     <TextView
-        android:id="@+id/fechaTarea3"
+        android:id="@+id/transporteTarea"
         android:layout_width="107dp"
         android:layout_height="34dp"
         app:layout_constraintBottom_toBottomOf="parent"
