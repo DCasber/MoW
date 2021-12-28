@@ -36,11 +36,7 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-
         lista = findViewById(R.id.listTareas);
-
-        // CONSEGUIR TAREAS DE LA BD
-        // tareas = getResources().getStringArray(R.array.array_technology);
 
         TareaHelper th = new TareaHelper(getApplicationContext(), "database_name.db");
         SQLiteDatabase db = th.getReadableDatabase();
@@ -57,9 +53,10 @@ public class MainActivity extends AppCompatActivity {
         Cursor cursor = db.query(Tarea.DictEntry.TABLE_NAME, datos, null, null, null, null, sortOrder);
         try {
             while (cursor.moveToNext()) {
+                String id = cursor.getString(cursor.getColumnIndexOrThrow(Tarea.DictEntry._ID));
                 String valorAsunto = cursor.getString(cursor.getColumnIndexOrThrow(Tarea.DictEntry.COLUMN_NAME_VAL_ASUNTO));
                 String valorAlarma = cursor.getString(cursor.getColumnIndexOrThrow(Tarea.DictEntry.COLUMN_NAME_VAL_ALARMA));
-                String aux = "Asunto: " + valorAsunto + ", - Hora de Alarma: " + valorAlarma;
+                String aux = "#" + id + " | Asunto: " + valorAsunto + ", - Hora de Alarma: " + valorAlarma;
                 tareas.add(aux);
 
 
@@ -72,6 +69,13 @@ public class MainActivity extends AppCompatActivity {
 
         arrayAdapter = new ArrayAdapter(this, android.R.layout.simple_list_item_1, tareas);
         lista.setAdapter(arrayAdapter);
+
+        lista.setOnItemClickListener((AdapterView.OnItemClickListener) (parent, view, position, id) -> {
+            String itemChosen = (String) parent.getItemAtPosition(position);
+            Intent intent = new Intent(MainActivity.this, MostrarTarea.class);
+            intent.putExtra("tarea", itemChosen);
+            startActivity(intent);
+        });
 
         Button crear = (Button) findViewById(R.id.button);
         
