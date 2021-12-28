@@ -2,6 +2,7 @@ package com.example.appmow;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.app.AlertDialog;
 import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
@@ -11,6 +12,7 @@ import android.util.Pair;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.ListView;
 import android.widget.Spinner;
 import android.widget.TextView;
@@ -26,7 +28,7 @@ import java.util.Map;
 public class MainActivity extends AppCompatActivity {
 
     private ListView lista;
-    private List<Pair<String, String>> tareas;
+    private List<String> tareas;
 
 
     @Override
@@ -43,15 +45,11 @@ public class MainActivity extends AppCompatActivity {
         TareaHelper th = new TareaHelper(getApplicationContext(), "database_name.db");
         SQLiteDatabase db = th.getReadableDatabase();
 
-        Map<Integer, List<Pair<String, String>>> listBD = new HashMap<>();
+        tareas = new ArrayList<>();
 
         String [] datos = {
                 Tarea.DictEntry._ID,
-                Tarea.DictEntry.COLUMN_NAME_KEY_ASUNTO,
                 Tarea.DictEntry.COLUMN_NAME_VAL_ASUNTO,
-                Tarea.DictEntry.COLUMN_NAME_KEY_UB_DESTINO,
-                Tarea.DictEntry.COLUMN_NAME_VAL_UB_DESTINO,
-                Tarea.DictEntry.COLUMN_NAME_KEY_ALARMA,
                 Tarea.DictEntry.COLUMN_NAME_VAL_ALARMA
         } ;
 
@@ -59,58 +57,25 @@ public class MainActivity extends AppCompatActivity {
         Cursor cursor = db.query(Tarea.DictEntry.TABLE_NAME, datos, null, null, null, null, sortOrder);
         try {
             while (cursor.moveToNext()) {
-                List<Pair<String, String>> aux = new ArrayList<>();
-                Integer id = cursor.getInt(cursor.getColumnIndexOrThrow(Tarea.DictEntry._ID));
-
-                String claveAsunto = cursor.getString(cursor.getColumnIndexOrThrow(Tarea.DictEntry.COLUMN_NAME_KEY_ASUNTO));
                 String valorAsunto = cursor.getString(cursor.getColumnIndexOrThrow(Tarea.DictEntry.COLUMN_NAME_VAL_ASUNTO));
-                Pair<String, String> asunto = new Pair<>(claveAsunto, valorAsunto);
-                aux.add(asunto);
-
-                String claveUbicacion = cursor.getString(cursor.getColumnIndexOrThrow(Tarea.DictEntry.COLUMN_NAME_KEY_UB_DESTINO));
-                String valorUbicacion = cursor.getString(cursor.getColumnIndexOrThrow(Tarea.DictEntry.COLUMN_NAME_VAL_UB_DESTINO));
-                Pair<String, String> ubicacion = new Pair<>(claveUbicacion, valorUbicacion);
-                aux.add(ubicacion);
-
-                String claveAlarma = cursor.getString(cursor.getColumnIndexOrThrow(Tarea.DictEntry.COLUMN_NAME_KEY_ALARMA));
                 String valorAlarma = cursor.getString(cursor.getColumnIndexOrThrow(Tarea.DictEntry.COLUMN_NAME_VAL_ALARMA));
-                Pair<String, String> alarma = new Pair<>(claveAlarma, valorAlarma);
-                aux.add(alarma);
+                String aux = "Asunto: " + valorAsunto + ", - Hora de Alarma: " + valorAlarma;
+                tareas.add(aux);
 
-                listBD.put(id, aux);
+
             }
         } finally {
             cursor.close();
         }
 
-        tareas = new ArrayList<>();
+        ArrayAdapter<List<String>> arrayAdapter;
 
-        for (List<Pair<String, String>> t : listBD.values()){
-            //t = key_asunto, val_asunto, key_ubicadst, val_ubicadst, key_alarma, val_alarma
-            for (ListIterator<Pair<String, String>> it = t.listIterator(); it.hasNext(); ) {
-                Pair<String, String> v = it.next();
-                tareas.add(v);
+        arrayAdapter = new ArrayAdapter(this, android.R.layout.simple_list_item_1, tareas);
+        lista.setAdapter(arrayAdapter);
 
-            }
-        }
+        Button crear = (Button) findViewById(R.id.button);
+        
 
-
-        final ArrayAdapter<String> adapter = new ArrayAdapter<String>(this,
-                android.R.layout.simple_list_item_1, android.R.id.text1, tareas);
-        lista.setAdapter(adapter);
-
-        lista.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> adapterView, View view, int position, long l) {
-                // TODO Auto-generated method stub
-
-                Intent intent = new Intent(MainActivity.this, MostrarTarea.class);
-                // Tarea tarea = COGER TAREA SELECCIONADA
-                // intent.putExtra(tarea, tarea);
-                startActivity(intent);
-
-            }
-        });
 
 
     }
