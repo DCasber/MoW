@@ -53,6 +53,7 @@ public class MainActivity extends AppCompatActivity {
                 Tarea.DictEntry.COLUMN_NAME_VAL_ALARMA
         } ;
 
+
         String sortOrder = Tarea.DictEntry.COLUMN_NAME_KEY_FECHA + " ASC";
         Cursor cursor = db.query(Tarea.DictEntry.TABLE_NAME, datos, null, null, null, null, sortOrder);
         try {
@@ -69,12 +70,19 @@ public class MainActivity extends AppCompatActivity {
         }
 
         ArrayAdapter<List<String>> arrayAdapter;
-
+        /*
         arrayAdapter = new ArrayAdapter(this, android.R.layout.simple_list_item_1, tareas);
         lista.setAdapter(arrayAdapter);
+        */
+
 
         Button crear = (Button) findViewById(R.id.button);
-        
+
+        crear.setOnClickListener((View v) -> {
+            Intent intent = new Intent(v.getContext(), NuevaTarea.class);
+            startActivity(intent);
+        });
+
 
 
 
