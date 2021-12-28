@@ -17,6 +17,8 @@ public class TareaHelper extends SQLiteOpenHelper {
                     Tarea.DictEntry.COLUMN_NAME_VAL_UB_DESTINO + " TEXT, " +
                     Tarea.DictEntry.COLUMN_NAME_KEY_FECHA + " TEXT, " +
                     Tarea.DictEntry.COLUMN_NAME_VAL_FECHA + " TEXT, " +
+                    Tarea.DictEntry.COLUMN_NAME_KEY_HORA + " TEXT, " +
+                    Tarea.DictEntry.COLUMN_NAME_VAL_HORA + " TEXT, " +
                     Tarea.DictEntry.COLUMN_NAME_KEY_ALARMA + " TEXT, " +
                     Tarea.DictEntry.COLUMN_NAME_VAL_ALARMA + " TEXT, " +
                     Tarea.DictEntry.COLUMN_NAME_KEY_TRANSPORTE + " INTEGER, " +
