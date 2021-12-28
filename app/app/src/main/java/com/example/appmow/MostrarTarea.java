@@ -42,7 +42,7 @@ public class MostrarTarea extends AppCompatActivity{
         Bundle extras = getIntent().getExtras();
         String tarea = (String) extras.get("tarea");
 
-        Integer id = Integer.parseInt(tarea.split("|")[0].substring(1));
+        Integer id = Integer.parseInt(tarea.split("|")[0].substring(1).trim());
 
         TareaHelper th = new TareaHelper(getApplicationContext(), "database_name.db");
         SQLiteDatabase db = th.getReadableDatabase();
@@ -88,6 +88,7 @@ public class MostrarTarea extends AppCompatActivity{
 
         com.google.android.gms.maps.MapFragment mapOrigen = (MapFragment) getFragmentManager().findFragmentById(R.id.ubicacionPersona);
         mapOrigen.getMapAsync(onMapReadyCallback1(latOrigen, longOrigen));
+
         com.google.android.gms.maps.MapFragment mapDestino = (MapFragment) getFragmentManager().findFragmentById(R.id.ubicacionTarea);
         mapDestino.getMapAsync(onMapReadyCallback2(latDestino, longDestino));
 
