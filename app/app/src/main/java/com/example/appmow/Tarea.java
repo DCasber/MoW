@@ -23,9 +23,8 @@ public final class Tarea {
         public static final String COLUMN_NAME_VAL_ALARMA = "valorAlarma";
         public static final String COLUMN_NAME_KEY_TRANSPORTE = "Transporte";
         public static final String COLUMN_NAME_VAL_TRANSPORTE = "valorTransporte";
-
-        //public static final String COLUMN_NAME_KEY_FRECUENCIA = "Frecuencia";
-        //public static final String COLUMN_NAME_VAL_FRECUENCIA = "valorFrecuencia";
+        public static final String COLUMN_NAME_KEY_HORA = "Hora";
+        public static final String COLUMN_NAME_VAL_HORA = "valorFHora";
 
     }
 }

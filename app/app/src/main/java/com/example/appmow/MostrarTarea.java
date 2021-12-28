@@ -40,7 +40,9 @@ public class MostrarTarea extends AppCompatActivity{
         String ubicacionDestino = "";
 
         Bundle extras = getIntent().getExtras();
-        Integer tarea = (Integer) extras.get("ID");
+        String tarea = (String) extras.get("tarea");
+
+        Integer id = Integer.parseInt(tarea.split("|")[0].substring(1));
 
         TareaHelper th = new TareaHelper(getApplicationContext(), "database_name.db");
         SQLiteDatabase db = th.getReadableDatabase();
@@ -55,7 +57,7 @@ public class MostrarTarea extends AppCompatActivity{
                 Tarea.DictEntry.COLUMN_NAME_VAL_FECHA,
         };
 
-        Cursor cursor = db.query(Tarea.DictEntry.TABLE_NAME, datos, "_ID = " + tarea, null, null, null, null);
+        Cursor cursor = db.query(Tarea.DictEntry.TABLE_NAME, datos, "_ID = " + id, null, null, null, null);
         try {
 
                 asunto = cursor.getString(cursor.getColumnIndexOrThrow(Tarea.DictEntry.COLUMN_NAME_VAL_ASUNTO));
