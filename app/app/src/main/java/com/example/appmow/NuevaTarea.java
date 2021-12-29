@@ -66,7 +66,7 @@ public class NuevaTarea extends AppCompatActivity {
 
         s = sp.getSelectedItem().toString();
 
-        Button bOrigen = (Button) findViewById(R.id.bOrigen);
+        //Button bOrigen = (Button) findViewById(R.id.b);
 
 
     }
