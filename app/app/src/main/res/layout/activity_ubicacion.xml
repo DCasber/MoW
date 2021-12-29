@@ -27,6 +27,6 @@
         android:id="@+id/eDestino"
         android:layout_width="212dp"
         android:layout_height="wrap_content" />
-    
+
 
 </LinearLayout>
