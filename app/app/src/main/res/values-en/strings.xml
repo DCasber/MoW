@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">appMoW</string>
+    <string name="misTareas">My Tasks</string>
+    <string name="labelFecha">Date:</string>
+    <string name="labelAlarma">Alarm:</string>
+    <string name="labelTransporte">Transport:</string>
+    <string name="labelMiUbicación">My Ubication:</string>
+    <string name="labelUbicaciónTarea">Task Ubication</string>
+    <string name="alarma">Alarm:</string>
+    <string name="asunto">Subject:</string>
+    <string name="origen">Origin:</string>
+    <string name="destino">Destination:</string>
+    <string name="transporte">Means of Transport:</string>
+    <string name="hora">Hour:</string>
+    <string name="crearTarea">New Task</string>
+    <string name="titlulo_pickers">Obtain date and hour</string>
+    <string name="formato_fecha">dd/mm/yyyy</string>
+    <string name="formato_hora">hh:mm</string>
+</resources>
