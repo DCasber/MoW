@@ -1,100 +1,121 @@
 package com.example.appmow;
 
-import androidx.annotation.NonNull;
+import androidx.activity.result.ActivityResult;
+import androidx.activity.result.ActivityResultCallback;
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.app.Activity;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.TextView;
+import android.widget.Toast;
 
-import com.google.android.gms.common.api.Status;
-import com.google.android.libraries.places.api.Places;
-import com.google.android.libraries.places.api.model.Place;
-import com.google.android.libraries.places.api.net.PlacesClient;
-import com.google.android.libraries.places.widget.Autocomplete;
-import com.google.android.libraries.places.widget.AutocompleteActivity;
-import com.google.android.libraries.places.widget.AutocompleteSupportFragment;
-import com.google.android.libraries.places.widget.listener.PlaceSelectionListener;
-import com.google.android.libraries.places.widget.model.AutocompleteActivityMode;
+import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.OnMapReadyCallback;
+import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.MarkerOptions;
 
-import java.util.Arrays;
-import java.util.List;
+public class Ubicacion extends AppCompatActivity  implements GoogleMap.OnMapClickListener,
+        OnMapReadyCallback {
 
-public class Ubicacion extends AppCompatActivity {
+    private GoogleMap googleMap;
+    private LatLng origen, destino;
+    TextView eOrigen, eDestino;
+    private Integer mapCount = 0;
+    private Button limpiar, continuar;
 
-    private static final int FROM_REQUEST_CODE = 1;
-    private static final int TO_REQUEST_CODE = 2;
-    private static final String TAG = "MainActivity";
-    EditText eOrigen, eDestino;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_ubicacion);
 
-        Places.initialize(getApplicationContext(), "AIzaSyD6A7Zni9DVryKVro8--jjmGmy8Zq3auxc");
+        eOrigen = (TextView) findViewById(R.id.eOrigen);
+        eDestino = (TextView) findViewById(R.id.eDestino);
 
-        eOrigen = (EditText) findViewById(R.id.eOrigen);
+        eOrigen.setText("");
+        eDestino.setText("");
 
-        eOrigen.setOnClickListener((View) -> {
-            startAutocomplete(FROM_REQUEST_CODE);
+        limpiar = (Button) findViewById(R.id.limpiar);
+        continuar = (Button) findViewById(R.id.continuar);
+
+        limpiar.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+                eOrigen.setText("");
+                eDestino.setText("");
+                mapCount = 0;
+                googleMap.clear();
+                origen = null;
+                destino = null;
+
+            }
         });
 
+        continuar.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+                if (origen == null || destino == null) {
+                    Toast.makeText(getApplicationContext(), "Faltan puntos por seleccionar", Toast.LENGTH_SHORT).show();
+                }
+                else{
+                    Intent data = new Intent();
+                    data.putExtra("origen", origen);
+                    data.putExtra("destino", destino);
+                    setResult(RESULT_OK, data);
 
-        eDestino = (EditText) findViewById(R.id.eDestino);
+                    finish();
+                }
+            }
 
-        eDestino.setOnClickListener((View) -> {
-            startAutocomplete(TO_REQUEST_CODE);
-        });
+            }
+        );
 
-    }
 
-    private void startAutocomplete(int requestCode){
-        List<Place.Field> fields = Arrays.asList(Place.Field.ID, Place.Field.NAME);
 
-        // Start the autocomplete intent.
-        Intent intent = new Autocomplete.IntentBuilder(AutocompleteActivityMode.FULLSCREEN, fields)
-                .build(this);
-        startActivityForResult(intent, requestCode);
+        SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
+                .findFragmentById(R.id.map);
+        mapFragment.getMapAsync(this);
     }
 
     @Override
-    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
-        if (requestCode == FROM_REQUEST_CODE) {
-            if (resultCode == RESULT_OK) {
-                Place place = Autocomplete.getPlaceFromIntent(data);
-                Log.i(TAG, "Place: " + place.getName() + ", " + place.getId());
+    public void onMapReady(GoogleMap googleMap) {
+        LatLng latlng = new LatLng(-33.852, 151.211);
+        this.googleMap = googleMap;
+        this.googleMap.addMarker(new MarkerOptions()
+                .position(latlng)
+                .title("Position"));
 
-                eOrigen.setText(place.getName());
+        this.googleMap.setOnMapClickListener(this);
 
-            } else if (resultCode == AutocompleteActivity.RESULT_ERROR) {
-                // TODO: Handle the error.
-                Status status = Autocomplete.getStatusFromIntent(data);
-                Log.i(TAG, status.getStatusMessage().toString());
-            } else if (resultCode == RESULT_CANCELED) {
-                // The user canceled the operation.
-            }
-            return;
+    }
 
-        } else if (requestCode == TO_REQUEST_CODE) {
-            if (resultCode == RESULT_OK) {
-                Place place = Autocomplete.getPlaceFromIntent(data);
-                Log.i(TAG, "Place: " + place.getName() + ", " + place.getId());
-                eDestino.setText(place.getName());
-            } else if (resultCode == AutocompleteActivity.RESULT_ERROR) {
-                // TODO: Handle the error.
-                Status status = Autocomplete.getStatusFromIntent(data);
-                Log.i(TAG, status.getStatusMessage().toString());
-            } else if (resultCode == RESULT_CANCELED) {
-                // The user canceled the operation.
-            }
-            return;
+    @Override
+    public void onMapClick(LatLng point) {
+        mapCount++;
+        if(mapCount == 1){
+            this.googleMap.addMarker(new MarkerOptions()
+                    .position(point)
+                    .title("Origen"));
+            this.eOrigen.setText(point.latitude + "," + point.longitude);
+            this.origen = point;
+        }
+        else if (mapCount == 2){
+            this.googleMap.addMarker(new MarkerOptions()
+                    .position(point)
+                    .title("Destino"));
+            this.eDestino.setText(point.latitude + "," + point.longitude);
+            this.destino = point;
         }
 
-        super.onActivityResult(requestCode, resultCode, data);
     }
+
 }
+
+

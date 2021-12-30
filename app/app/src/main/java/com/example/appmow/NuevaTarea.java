@@ -1,7 +1,12 @@
 package com.example.appmow;
 
+import androidx.activity.result.ActivityResult;
+import androidx.activity.result.ActivityResultCallback;
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.app.Activity;
 import android.app.DatePickerDialog;
 import android.app.Dialog;
 import android.app.TimePickerDialog;
@@ -15,12 +20,14 @@ import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.TimePicker;
 
+import com.google.android.gms.maps.model.LatLng;
+
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
 
 public class NuevaTarea extends AppCompatActivity {
-    EditText fecha, hora, asunto, eOrigen, eDestino;
+    EditText fecha, hora, asunto, latOrigen, latDestino, lonOrigen, lonDestino;
     private int a, m, d, h, min;
     private String as, s;
     static final int DATE_ID = 0;
@@ -31,6 +38,11 @@ public class NuevaTarea extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_nueva_tarea);
+
+        latOrigen = (EditText) findViewById(R.id.idLatOrigen);
+        latDestino = (EditText) findViewById(R.id.idLatDestino);
+        lonOrigen = (EditText) findViewById(R.id.idLonOrigen);
+        lonDestino = (EditText) findViewById(R.id.idLonDestino);
 
         fecha = (EditText) findViewById(R.id.idFecha);
         hora = (EditText) findViewById(R.id.idHora);
@@ -70,13 +82,27 @@ public class NuevaTarea extends AppCompatActivity {
 
         bBuscar.setOnClickListener((View v) -> {
             Intent intent = new Intent(v.getContext(), Ubicacion.class);
-            startActivity(intent);
+            buscarUbicacion.launch(intent);
         });
 
 
     }
 
+    ActivityResultLauncher<Intent> buscarUbicacion = registerForActivityResult(
+            new ActivityResultContracts.StartActivityForResult(),
+            result -> {
+                if (result.getResultCode() == Activity.RESULT_OK) {
+                    Intent data = result.getData();
+                    Bundle extras = data.getExtras();
+                    LatLng origen = (LatLng) extras.get("origen");
+                    LatLng destino = (LatLng) extras.get("destino");
+                    latOrigen.setText(origen.latitude + "");
+                    latDestino.setText(destino.latitude + "");
+                    lonOrigen.setText(origen.longitude + "");
+                    lonDestino.setText(destino.longitude + "");
 
+                }
+            });
 
     private void colocar_hora() {
         hora.setText( h + ":" + min + " ");
