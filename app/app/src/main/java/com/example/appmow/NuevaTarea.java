@@ -85,10 +85,19 @@ public class NuevaTarea extends AppCompatActivity {
             buscarUbicacion.launch(intent);
         });
 
+        Button bCrear = (Button) findViewById(R.id.bCrear);
+
+        bCrear.setOnClickListener((View v) -> {
+
+
+
+            finish();
+        });
+
 
     }
 
-    ActivityResultLauncher<Intent> buscarUbicacion = registerForActivityResult(
+        ActivityResultLauncher<Intent> buscarUbicacion = registerForActivityResult(
             new ActivityResultContracts.StartActivityForResult(),
             result -> {
                 if (result.getResultCode() == Activity.RESULT_OK) {
@@ -103,6 +112,9 @@ public class NuevaTarea extends AppCompatActivity {
 
                 }
             });
+
+
+
 
     private void colocar_hora() {
         hora.setText( h + ":" + min + " ");
