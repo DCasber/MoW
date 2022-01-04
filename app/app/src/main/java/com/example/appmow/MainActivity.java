@@ -29,6 +29,7 @@ public class MainActivity extends AppCompatActivity {
 
     private ListView lista;
     private List<String> tareas;
+    private static final int ID = 0;
 
 
     @Override
@@ -37,7 +38,7 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         lista = findViewById(R.id.listTareas);
-
+        /*
         TareaHelper th = new TareaHelper(getApplicationContext(), "database_name.db");
         SQLiteDatabase db = th.getReadableDatabase();
 
@@ -67,7 +68,7 @@ public class MainActivity extends AppCompatActivity {
         }
 
         ArrayAdapter<List<String>> arrayAdapter;
-        /*
+
         arrayAdapter = new ArrayAdapter(this, android.R.layout.simple_list_item_1, tareas);
         lista.setAdapter(arrayAdapter);
         */

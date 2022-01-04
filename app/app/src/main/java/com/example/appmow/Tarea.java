@@ -7,26 +7,66 @@ import android.provider.BaseColumns;
 
 import androidx.annotation.Nullable;
 
-public final class Tarea {
-    private Tarea() {}
-    public static abstract class DictEntry implements BaseColumns {
-        public static final String TABLE_NAME = "Tarea";
-        public static final String COLUMN_NAME_KEY_ASUNTO = "Asunto";
-        public static final String COLUMN_NAME_VAL_ASUNTO = "valorAsunto";
-        public static final String COLUMN_NAME_KEY_UB_DESTINO = "UbDestino";
-        public static final String COLUMN_NAME_VAL_UB_DESTINO = "valorUbDestino";
-        public static final String COLUMN_NAME_KEY_UB_ORIGEN = "UbOrigen";
-        public static final String COLUMN_NAME_VAL_UB_ORIGEN = "valorUbOrigen";
-        public static final String COLUMN_NAME_KEY_FECHA = "Fecha";
-        public static final String COLUMN_NAME_VAL_FECHA = "valorFecha";
-        public static final String COLUMN_NAME_KEY_ALARMA = "Alarma";
-        public static final String COLUMN_NAME_VAL_ALARMA = "valorAlarma";
-        public static final String COLUMN_NAME_KEY_TRANSPORTE = "Transporte";
-        public static final String COLUMN_NAME_VAL_TRANSPORTE = "valorTransporte";
-        public static final String COLUMN_NAME_KEY_HORA = "Hora";
-        public static final String COLUMN_NAME_VAL_HORA = "valorFHora";
+import java.sql.Date;
+import java.sql.Time;
 
+public final class Tarea {
+    private int id;
+    private String asunto;
+    private Time hora;
+    private Date fecha;
+    private String origen;
+    private String destino;
+    private Date alarma;
+    private String transporte;
+
+    public Tarea(int id, String asunto, Time hora, Date fecha, String origen, String destino, Date alarma, String transporte) {
+        this.id = id;
+        this.asunto = asunto;
+        this.hora = hora;
+        this.fecha = fecha;
+        this.origen = origen;
+        this.destino = destino;
+        this.alarma = alarma;
+        this.transporte = transporte;
     }
+
+    public String getAsunto() {
+        return asunto;
+    }
+
+    public Time getHora() {
+        return hora;
+    }
+
+    public Date getFecha() {
+        return fecha;
+    }
+
+    public String getOrigen() {
+        return origen;
+    }
+
+    public String getDestino() {
+        return destino;
+    }
+
+    public Date getAlarma() {
+        return alarma;
+    }
+
+    public String getTransporte() {
+        return transporte;
+    }
+
+    public int getId() {
+        return id;
+    }
+
+
+
+
+
 }
 
 
