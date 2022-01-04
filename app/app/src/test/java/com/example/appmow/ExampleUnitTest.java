@@ -1,8 +1,10 @@
 package com.example.appmow;
 
-import org.junit.Test;
-
 import static org.junit.Assert.*;
+
+import com.google.firebase.firestore.util.Assert;
+
+import org.testng.annotations.Test;
 
 /**
  * Example local unit test, which will execute on the development machine (host).
