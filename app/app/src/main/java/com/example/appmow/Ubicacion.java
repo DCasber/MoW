@@ -2,7 +2,11 @@ package com.example.appmow;
 
 import android.content.Intent;
 import android.graphics.Color;
+import android.location.Location;
+import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.StrictMode;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
@@ -10,6 +14,7 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+
 import com.directions.route.AbstractRouting;
 import com.directions.route.Route;
 import com.directions.route.RouteException;
@@ -31,7 +36,31 @@ import com.google.android.libraries.places.api.net.PlacesClient;
 import com.google.android.libraries.places.widget.AutocompleteSupportFragment;
 import com.google.android.libraries.places.widget.listener.PlaceSelectionListener;
 import com.google.android.material.snackbar.Snackbar;
+import com.google.firebase.crashlytics.buildtools.reloc.org.apache.http.HttpEntity;
+import com.google.firebase.crashlytics.buildtools.reloc.org.apache.http.HttpResponse;
+import com.google.firebase.crashlytics.buildtools.reloc.org.apache.http.client.ClientProtocolException;
+import com.google.firebase.crashlytics.buildtools.reloc.org.apache.http.client.HttpClient;
+import com.google.firebase.crashlytics.buildtools.reloc.org.apache.http.client.methods.HttpPost;
+import com.google.firebase.crashlytics.buildtools.reloc.org.apache.http.impl.client.DefaultHttpClient;
+import com.squareup.okhttp.Call;
+import com.squareup.okhttp.Callback;
+import com.squareup.okhttp.OkHttpClient;
+import com.squareup.okhttp.Request;
+import com.squareup.okhttp.Response;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
+import java.net.ProtocolException;
+import java.net.URL;
+import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -41,7 +70,8 @@ public class Ubicacion extends AppCompatActivity  implements GoogleMap.OnMapClic
 
     private GoogleMap googleMap;
     private LatLng origen, destino;
-    TextView eOrigen, eDestino, tvDistDurat;
+    private String duracion = "";
+    TextView eOrigen, eDestino, tvDuration;
     private Integer mapCount = 0;
     private Button limpiar, continuar;
 
@@ -51,15 +81,20 @@ public class Ubicacion extends AppCompatActivity  implements GoogleMap.OnMapClic
     private List<Polyline> polylines = null;
 
 
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_ubicacion);
 
+        StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
+        StrictMode.setThreadPolicy(policy);
+
 
         eOrigen = (TextView) findViewById(R.id.eOrigen);
         eDestino = (TextView) findViewById(R.id.eDestino);
-        tvDistDurat = (TextView) findViewById(R.id.tvDistDurat);
+        tvDuration = (TextView) findViewById(R.id.tvDistDurat);
 
         eOrigen.setText("");
         eDestino.setText("");
@@ -71,6 +106,7 @@ public class Ubicacion extends AppCompatActivity  implements GoogleMap.OnMapClic
             public void onClick(View v) {
                 eOrigen.setText("");
                 eDestino.setText("");
+                tvDuration.setText("");
                 mapCount = 0;
                 googleMap.clear();
                 origen = null;
@@ -87,6 +123,8 @@ public class Ubicacion extends AppCompatActivity  implements GoogleMap.OnMapClic
                                                  Intent data = new Intent();
                                                  data.putExtra("origen", origen);
                                                  data.putExtra("destino", destino);
+                                                 long durationLong = parseDuracion(duracion);
+                                                 data.putExtra("duracion", durationLong);
                                                  setResult(RESULT_OK, data);
 
                                                  finish();
@@ -133,6 +171,14 @@ public class Ubicacion extends AppCompatActivity  implements GoogleMap.OnMapClic
                     googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(destino, 10));
                     Findroutes(origen, destino);
 
+                    try {
+                        duracion = getDuracion(origen, destino);
+                    } catch (IOException | JSONException e) {
+                        e.printStackTrace();
+                    }
+
+                    tvDuration.setText(duracion + "");
+
 
                 }
 
@@ -150,6 +196,15 @@ public class Ubicacion extends AppCompatActivity  implements GoogleMap.OnMapClic
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
 
+    }
+
+    public long parseDuracion(String input) {
+        input = input.toLowerCase()
+                .replaceAll("mins?", "M")
+                .replaceAll("hours?", "H")
+                .replaceAll("\\s+", "");
+        Duration d = Duration.parse("PT" + input);
+        return d.toMinutes();
     }
 
     @Override
@@ -185,13 +240,107 @@ public class Ubicacion extends AppCompatActivity  implements GoogleMap.OnMapClic
             googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(destino, 10));
             Findroutes(origen, destino);
 
+            try {
+                duracion = getDuracion(origen, destino);
+            } catch (IOException | JSONException e) {
+                e.printStackTrace();
+            }
 
+            tvDuration.setText(duracion + "");
 
 
 
         }
 
     }
+
+
+
+    private String getDuracion(LatLng origen, LatLng destino) throws IOException, JSONException {
+
+
+            String stringUrl = "https://maps.googleapis.com/maps/api/distancematrix/json?units=metric&origins="+
+                    origen.latitude+","+origen.longitude+
+                    "&destinations="+destino.latitude+","+destino.longitude+"&key=AIzaSyD6A7Zni9DVryKVro8--jjmGmy8Zq3auxc&mode=driving";
+
+        String json;
+        json = NetworkUtils.getJSONFromAPI(stringUrl);
+
+        String duration = new JSONObject(json)
+                .getJSONArray("rows")
+                .getJSONObject(0)
+                .getJSONArray("elements")
+                .getJSONObject(0)
+                .getJSONObject("duration")
+                .get("text").toString();
+
+
+
+        return duration;
+
+
+    }
+
+
+    public static class NetworkUtils {
+
+        public static String getJSONFromAPI (String url){
+            String output = "";
+            try {
+                URL apiEnd = new URL(url);
+                int responseCode;
+                HttpURLConnection connection;
+                InputStream is;
+
+                connection = (HttpURLConnection) apiEnd.openConnection();
+                connection.setRequestMethod("GET");
+                connection.setReadTimeout(15000);
+                connection.setConnectTimeout(15000);
+                connection.connect();
+
+                responseCode = connection.getResponseCode();
+                if(responseCode < HttpURLConnection.HTTP_BAD_REQUEST){
+                    is = connection.getInputStream();
+                }else {
+                    is = connection.getErrorStream();
+                }
+
+                output = convertISToString(is);
+                is.close();
+                connection.disconnect();
+
+            }  catch (MalformedURLException e) {
+                e.printStackTrace();
+            } catch (ProtocolException e) {
+                e.printStackTrace();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
+
+            return output;
+        }
+
+        private static String convertISToString(InputStream is){
+            StringBuffer buffer = new StringBuffer();
+
+            try {
+
+                BufferedReader br;
+                String row;
+
+                br = new BufferedReader(new InputStreamReader(is));
+                while ((row = br.readLine())!= null){
+                    buffer.append(row);
+                }
+                br.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            return buffer.toString();
+        }
+    }
+
 
 
 

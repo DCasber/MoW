@@ -105,8 +105,6 @@ public class NuevaTarea extends AppCompatActivity {
             buscarUbicacion.launch(intent);
         });
 
-        //TODO: Obtener valores de la clase Ubicación
-
         Button bCrear = (Button) findViewById(R.id.bCrear);
 
         bCrear.setOnClickListener((View v) -> {
@@ -144,8 +142,7 @@ public class NuevaTarea extends AppCompatActivity {
                     latDestino.setText(destino.latitude + "");
                     lonOrigen.setText(origen.longitude + "");
                     lonDestino.setText(destino.longitude + "");
-                    duracion = 0; //valor a obtener
-
+                    duracion = (long) extras.get("duracion");
                 }
             });
 

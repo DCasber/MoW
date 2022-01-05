@@ -5,10 +5,19 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.util.Pair;
+import android.view.View;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import com.directions.route.AbstractRouting;
+import com.directions.route.Route;
+import com.directions.route.RouteException;
+import com.directions.route.Routing;
+import com.directions.route.RoutingListener;
+import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.MapFragment;
 import com.google.android.gms.maps.MapView;
@@ -18,13 +27,23 @@ import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.android.gms.maps.model.Polyline;
+import com.google.android.gms.maps.model.PolylineOptions;
+import com.google.android.material.snackbar.Snackbar;
 
-public class MostrarTarea extends AppCompatActivity{
+import java.util.ArrayList;
+import java.util.List;
+
+public class MostrarTarea extends AppCompatActivity implements OnMapReadyCallback, RoutingListener {
 
     final TextView tAsunto = (TextView) findViewById(R.id.nombreTarea);
     final TextView tFecha = (TextView) findViewById(R.id.fechaTarea);
     final TextView tAlarma = (TextView) findViewById(R.id.alarmaTarea);
     final TextView tTransporte = (TextView) findViewById(R.id.transporteTarea);
+
+    private GoogleMap googleMap;
+    private LatLng origen, destino;
+    private List<Polyline> polylines = null;
 
 
     @Override
@@ -81,38 +100,111 @@ public class MostrarTarea extends AppCompatActivity{
         String [] ubOrigen = ubicacionOrigen.split(",");
         String [] ubDestino = ubicacionDestino.split(",");
 
-        latOrigen = Integer.parseInt(ubOrigen[0]);
-        latDestino = Integer.parseInt(ubDestino[0]);
-        longOrigen = Integer.parseInt(ubOrigen[1]);
-        longDestino = Integer.parseInt(ubDestino[1]);
+        latOrigen = Double.parseDouble(ubOrigen[0]);
+        latDestino = Double.parseDouble(ubDestino[0]);
+        longOrigen = Double.parseDouble(ubOrigen[1]);
+        longDestino = Double.parseDouble(ubDestino[1]);
 
-        com.google.android.gms.maps.MapFragment mapOrigen = (MapFragment) getFragmentManager().findFragmentById(R.id.ubicacionPersona);
-        mapOrigen.getMapAsync(onMapReadyCallback1(latOrigen, longOrigen));
+        SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
+                .findFragmentById(R.id.map);
+        mapFragment.getMapAsync(this);
 
-        com.google.android.gms.maps.MapFragment mapDestino = (MapFragment) getFragmentManager().findFragmentById(R.id.ubicacionTarea);
-        mapDestino.getMapAsync(onMapReadyCallback2(latDestino, longDestino));
+        origen = new LatLng(latOrigen, longOrigen);
+        destino = new LatLng(latDestino, longDestino);
 
         */
 
+
     }
 
-    public OnMapReadyCallback onMapReadyCallback1(double lat, double lon){
-        return googleMap -> {
-            GoogleMap mMap = googleMap;
-            LatLng latlng = new LatLng(lat, lon);
-            mMap.addMarker(new MarkerOptions().position(latlng).title("Origen"));
-            mMap.moveCamera(CameraUpdateFactory.newLatLng(latlng));
-        };
+
+    @Override
+    public void onMapReady(GoogleMap googleMap) {
+
+        this.googleMap = googleMap;
+        this.googleMap.addMarker(new MarkerOptions()
+                .position(origen)
+                .title("Origen"));
+
+        this.googleMap.addMarker(new MarkerOptions()
+                .position(destino)
+                .title("Destino"));
+
+        Findroutes(origen, destino);
+
+
     }
 
-    public OnMapReadyCallback onMapReadyCallback2(double lat, double lon){
-        return googleMap -> {
-            GoogleMap mMap = googleMap;
-            LatLng latlng = new LatLng(lat, lon);
-            mMap.addMarker(new MarkerOptions().position(latlng).title("Destino"));
-            mMap.moveCamera(CameraUpdateFactory.newLatLng(latlng));
+    public void Findroutes(LatLng Start, LatLng End) {
+        if (Start == null || End == null) {
+            Toast.makeText(MostrarTarea.this, "Unable to get location", Toast.LENGTH_LONG).show();
+        } else {
 
-        };
+            Routing routing = new Routing.Builder()
+                    .travelMode(AbstractRouting.TravelMode.DRIVING)
+                    .withListener(this)
+                    .alternativeRoutes(true)
+                    .waypoints(Start, End)
+                    .key("AIzaSyD6A7Zni9DVryKVro8--jjmGmy8Zq3auxc")  //also define your api key here.
+                    .build();
+            routing.execute();
+        }
     }
 
+    //Routing call back functions.
+    @Override
+    public void onRoutingFailure(RouteException e) {
+        View parentLayout = findViewById(android.R.id.content);
+        Snackbar snackbar = Snackbar.make(parentLayout, e.toString(), Snackbar.LENGTH_LONG);
+        snackbar.show();
+//    Findroutes(start,end);
+    }
+
+
+    @Override
+    public void onRoutingStart() {
+        Toast.makeText(MostrarTarea.this, "Finding Route...", Toast.LENGTH_LONG).show();
+    }
+
+    //If Route finding success..
+    @Override
+    public void onRoutingSuccess(ArrayList<Route> route, int shortestRouteIndex) {
+
+        CameraUpdate center = CameraUpdateFactory.newLatLng(origen);
+        CameraUpdate zoom = CameraUpdateFactory.zoomTo(16);
+        if (polylines != null) {
+            polylines.clear();
+        }
+        PolylineOptions polyOptions = new PolylineOptions();
+        LatLng polylineStartLatLng = null;
+        LatLng polylineEndLatLng = null;
+
+
+        polylines = new ArrayList<>();
+        //add route(s) to the map using polyline
+        for (int i = 0; i < route.size(); i++) {
+
+            if (i == shortestRouteIndex) {
+                polyOptions.color(Color.RED);
+                polyOptions.width(7);
+                polyOptions.addAll(route.get(shortestRouteIndex).getPoints());
+                Polyline polyline = googleMap.addPolyline(polyOptions);
+                polylineStartLatLng = polyline.getPoints().get(0);
+                int k = polyline.getPoints().size();
+                polylineEndLatLng = polyline.getPoints().get(k - 1);
+                polylines.add(polyline);
+
+            } else {
+
+            }
+
+        }
+
+    }
+
+    @Override
+    public void onRoutingCancelled() {
+        Findroutes(origen, destino);
+    }
 }
+
