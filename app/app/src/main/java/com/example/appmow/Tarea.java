@@ -11,19 +11,15 @@ import java.sql.Date;
 import java.sql.Time;
 
 public final class Tarea {
-    private int id;
     private String asunto;
-    private Time hora;
-    private Date fecha;
+    private String fecha;
     private String origen;
     private String destino;
-    private Date alarma;
+    private String alarma;
     private String transporte;
 
-    public Tarea(int id, String asunto, Time hora, Date fecha, String origen, String destino, Date alarma, String transporte) {
-        this.id = id;
+    public Tarea(String asunto, String fecha, String origen, String destino, String alarma, String transporte) {
         this.asunto = asunto;
-        this.hora = hora;
         this.fecha = fecha;
         this.origen = origen;
         this.destino = destino;
@@ -35,11 +31,7 @@ public final class Tarea {
         return asunto;
     }
 
-    public Time getHora() {
-        return hora;
-    }
-
-    public Date getFecha() {
+    public String getFecha() {
         return fecha;
     }
 
@@ -51,7 +43,7 @@ public final class Tarea {
         return destino;
     }
 
-    public Date getAlarma() {
+    public String getAlarma() {
         return alarma;
     }
 
@@ -59,9 +51,6 @@ public final class Tarea {
         return transporte;
     }
 
-    public int getId() {
-        return id;
-    }
 
 
 

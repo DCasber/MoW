@@ -15,15 +15,12 @@ public class TareaDBHelper extends SQLiteOpenHelper {
     public void onCreate(SQLiteDatabase db) {
         db.execSQL("CREATE TABLE " + TareaContract.TareaEntry.TABLE_NAME + " ("
                 + TareaContract.TareaEntry._ID + " INTEGER PRIMARY KEY AUTOINCREMENT,"
-                + TareaContract.TareaEntry.ID + " TEXT NOT NULL,"
                 + TareaContract.TareaEntry.ASUNTO + " TEXT NOT NULL,"
-                + TareaContract.TareaEntry.HORA + " TIME NOT NULL,"
-                + TareaContract.TareaEntry.FECHA + " DATE NOT NULL,"
-                + TareaContract.TareaEntry.ALARMA + " DATE NOT NULL,"
+                + TareaContract.TareaEntry.FECHA + " TEXT NOT NULL,"
+                + TareaContract.TareaEntry.ALARMA + " TEXT NOT NULL,"
                 + TareaContract.TareaEntry.ORIGEN + " TEXT NOT NULL,"
                 + TareaContract.TareaEntry.DESTINO + " TEXT NOT NULL,"
-                + TareaContract.TareaEntry.TRANSPORTE + " TEXT NOT NULL,"
-                + "UNIQUE (" + TareaContract.TareaEntry.ID + "))");
+                + TareaContract.TareaEntry.TRANSPORTE + " TEXT NOT NULL)");
     }
 
     @Override
