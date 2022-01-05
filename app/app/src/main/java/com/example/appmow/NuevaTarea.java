@@ -1,20 +1,19 @@
 package com.example.appmow;
 
-import androidx.activity.result.ActivityResult;
-import androidx.activity.result.ActivityResultCallback;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.app.Activity;
+import android.app.AlarmManager;
 import android.app.AlertDialog;
 import android.app.DatePickerDialog;
 import android.app.Dialog;
+import android.app.PendingIntent;
 import android.app.TimePickerDialog;
-import android.content.DialogInterface;
+import android.content.Context;
 import android.content.Intent;
-import android.database.Cursor;
-import android.database.sqlite.SQLiteDatabase;
+import android.net.Uri;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.ArrayAdapter;
@@ -29,6 +28,7 @@ import com.google.android.gms.maps.model.LatLng;
 
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.GregorianCalendar;
 import java.util.List;
 
 public class NuevaTarea extends AppCompatActivity {
@@ -108,9 +108,9 @@ public class NuevaTarea extends AppCompatActivity {
         Button bCrear = (Button) findViewById(R.id.bCrear);
 
         bCrear.setOnClickListener((View v) -> {
-            if(!excepciones()){
+
                 crear(duracion);
-            }
+
         });
 
 
@@ -119,11 +119,12 @@ public class NuevaTarea extends AppCompatActivity {
 
     private void crear(long duracion){
         //TODO: Insetar valores en la base de datos
-        Calendar fechaTarea = null;
+        Calendar fechaTarea = Calendar.getInstance();
         fechaTarea.set(a, m, d, h, min, 0);
         long timeTarea = fechaTarea.getTimeInMillis();
         timeTarea = timeTarea - duracion - 900000 ;
-
+        Toast.makeText(getApplicationContext(), getString(R.string.changed_to, h + ":" + m), Toast.LENGTH_LONG).show();
+        setAlarm(1, timeTarea, NuevaTarea.this);
 
 
     }
@@ -243,4 +244,13 @@ public class NuevaTarea extends AppCompatActivity {
 
         return false;
         }
+
+    public static void setAlarm(int i, Long timestamp, Context ctx) {
+        AlarmManager alarmManager = (AlarmManager) ctx.getSystemService(ALARM_SERVICE);
+        Intent alarmIntent = new Intent(ctx, AlarmReceiver.class);
+        PendingIntent pendingIntent;
+        pendingIntent = PendingIntent.getBroadcast(ctx, i, alarmIntent, PendingIntent.FLAG_ONE_SHOT);
+        alarmIntent.setData((Uri.parse("custom://" + System.currentTimeMillis())));
+        alarmManager.set(AlarmManager.RTC_WAKEUP, timestamp, pendingIntent);
     }
+}
