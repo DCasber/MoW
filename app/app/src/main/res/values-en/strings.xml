@@ -17,4 +17,8 @@
     <string name="titlulo_pickers">Obtain date and hour</string>
     <string name="formato_fecha">dd/mm/yyyy</string>
     <string name="formato_hora">hh:mm</string>
+    <string name="txtOrigen">Origin address</string>
+    <string name="txtDestino">Destination address</string>
+    <string name="new_notification">New Notification</string>
+    <string name="changed_to">Notification changed to %s</string>
 </resources>
