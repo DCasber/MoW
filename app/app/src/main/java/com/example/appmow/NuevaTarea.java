@@ -109,13 +109,13 @@ public class NuevaTarea extends AppCompatActivity {
 
         bCrear.setOnClickListener((View v) -> {
             if(!excepciones()) {
-                crear(duracion);
+                crear(duracion, id);
             }
         });
     }
 
 
-    private void crear(long duracion){
+    private void crear(long duracion, int id){
         //TODO: Insetar valores en la base de datos
         Calendar fechaTarea = Calendar.getInstance();
         fechaTarea.set(a, m, d, h, min, 0);
@@ -124,11 +124,11 @@ public class NuevaTarea extends AppCompatActivity {
         Toast.makeText(getApplicationContext(), getString(R.string.changed_to, h + ":" + m), Toast.LENGTH_LONG).show();
         setAlarm(1, timeTarea, NuevaTarea.this);
 
-        insertarBD(timeTarea);
+        insertarBD(timeTarea, id);
 
     }
 
-    private void insertarBD(long alarma){
+    private void insertarBD(long alarma, int id){
 
         TareaDBHelper dbHelper = new TareaDBHelper(getApplicationContext());
         SQLiteDatabase db = dbHelper.getWritableDatabase();
@@ -149,7 +149,15 @@ public class NuevaTarea extends AppCompatActivity {
         values.put(TareaContract.TareaEntry.ORIGEN, origen);
         values.put(TareaContract.TareaEntry.DESTINO, destino);
 
-        db.insert(TareaContract.TareaEntry.TABLE_NAME, null, values);
+        if(id != 0){
+            String where = TareaContract.TareaEntry._ID + " = ?";
+            String[] whereArg = {String.valueOf(id)};
+            db.update(TareaContract.TareaEntry.TABLE_NAME, values, where, whereArg);
+        } else {
+            db.insert(TareaContract.TareaEntry.TABLE_NAME, null, values);
+        }
+
+
 
 
     }
