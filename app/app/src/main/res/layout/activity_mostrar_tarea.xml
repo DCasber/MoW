@@ -90,28 +90,17 @@
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="0.322" />
 
-    <com.google.android.gms.maps.MapView
-        android:id="@+id/ubicacionPersona"
-        android:layout_width="192dp"
-        android:layout_height="169dp"
-        android:contentDescription="@string/labelMiUbicación"
+    <fragment
+        android:id="@+id/map"
+        android:name="com.google.android.gms.maps.SupportMapFragment"
+        android:layout_width="409dp"
+        android:layout_height="238dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.48"
+        app:layout_constraintHorizontal_bias="1.0"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.557" />
-
-    <com.google.android.gms.maps.MapView
-        android:id="@+id/ubicacionTarea"
-        android:layout_width="186dp"
-        android:layout_height="163dp"
-        android:contentDescription="@string/labelUbicaciónTarea"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.48"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.937" />
+        app:layout_constraintVertical_bias="0.665"
+        tools:context="com.example.mapwithmarker.MapsMarkerActivity" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
