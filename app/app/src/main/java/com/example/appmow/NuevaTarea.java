@@ -11,8 +11,10 @@ import android.app.DatePickerDialog;
 import android.app.Dialog;
 import android.app.PendingIntent;
 import android.app.TimePickerDialog;
+import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
+import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
 import android.os.Bundle;
 import android.view.View;
@@ -34,7 +36,6 @@ import java.util.List;
 public class NuevaTarea extends AppCompatActivity {
     EditText fecha, hora, asunto, latOrigen, latDestino, lonOrigen, lonDestino;
     private int a, m, d, h, min;
-    private String as, s;
     static final int DATE_ID = 0;
     static final int TIME_ID = 1;
     private Spinner sp;
@@ -96,7 +97,6 @@ public class NuevaTarea extends AppCompatActivity {
         ArrayAdapter<String> adapter = new ArrayAdapter<>(this, R.layout.support_simple_spinner_dropdown_item, transportes);
         sp.setAdapter(adapter);
 
-        s = sp.getSelectedItem().toString();
 
         Button bBuscar = (Button) findViewById(R.id.bBuscar);
 
@@ -108,12 +108,10 @@ public class NuevaTarea extends AppCompatActivity {
         Button bCrear = (Button) findViewById(R.id.bCrear);
 
         bCrear.setOnClickListener((View v) -> {
-
+            if(!excepciones()) {
                 crear(duracion);
-
+            }
         });
-
-
     }
 
 
@@ -125,6 +123,33 @@ public class NuevaTarea extends AppCompatActivity {
         timeTarea = timeTarea - duracion - 900000 ;
         Toast.makeText(getApplicationContext(), getString(R.string.changed_to, h + ":" + m), Toast.LENGTH_LONG).show();
         setAlarm(1, timeTarea, NuevaTarea.this);
+
+        insertarBD(timeTarea);
+
+    }
+
+    private void insertarBD(long alarma){
+
+        TareaDBHelper dbHelper = new TareaDBHelper(getApplicationContext());
+        SQLiteDatabase db = dbHelper.getWritableDatabase();
+
+
+        ContentValues values = new ContentValues();
+        Calendar fechaTarea = Calendar.getInstance();
+        fechaTarea.set(a, m, d, h, min, 0);
+        long timeTarea = fechaTarea.getTimeInMillis();
+
+        String origen = "Lat: " + latOrigen + " Lon: " + lonOrigen;
+        String destino = "Lat: " + latDestino + " Lon: " + lonDestino;
+
+        values.put(TareaContract.TareaEntry.ASUNTO, asunto.getText().toString());
+        values.put(TareaContract.TareaEntry.FECHA, timeTarea + "");
+        values.put(TareaContract.TareaEntry.ALARMA, alarma + "");
+        values.put(TareaContract.TareaEntry.TRANSPORTE, sp.getSelectedItem().toString());
+        values.put(TareaContract.TareaEntry.ORIGEN, origen);
+        values.put(TareaContract.TareaEntry.DESTINO, destino);
+
+        db.insert(TareaContract.TareaEntry.TABLE_NAME, null, values);
 
 
     }
@@ -143,6 +168,7 @@ public class NuevaTarea extends AppCompatActivity {
                     lonOrigen.setText(origen.longitude + "");
                     lonDestino.setText(destino.longitude + "");
                     duracion = (long) extras.get("duracion");
+                    duracion = duracion * 6000;
                 }
             });
 
@@ -243,7 +269,7 @@ public class NuevaTarea extends AppCompatActivity {
         }
 
         return false;
-        }
+    }
 
     public static void setAlarm(int i, Long timestamp, Context ctx) {
         AlarmManager alarmManager = (AlarmManager) ctx.getSystemService(ALARM_SERVICE);
