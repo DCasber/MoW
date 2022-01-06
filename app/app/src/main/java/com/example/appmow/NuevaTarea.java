@@ -1,20 +1,21 @@
 package com.example.appmow;
 
-import androidx.activity.result.ActivityResult;
-import androidx.activity.result.ActivityResultCallback;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.app.Activity;
+import android.app.AlarmManager;
 import android.app.AlertDialog;
 import android.app.DatePickerDialog;
 import android.app.Dialog;
+import android.app.PendingIntent;
 import android.app.TimePickerDialog;
-import android.content.DialogInterface;
+import android.content.ContentValues;
+import android.content.Context;
 import android.content.Intent;
-import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.net.Uri;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.ArrayAdapter;
@@ -29,12 +30,12 @@ import com.google.android.gms.maps.model.LatLng;
 
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.GregorianCalendar;
 import java.util.List;
 
 public class NuevaTarea extends AppCompatActivity {
     EditText fecha, hora, asunto, latOrigen, latDestino, lonOrigen, lonDestino;
     private int a, m, d, h, min;
-    private String as, s;
     static final int DATE_ID = 0;
     static final int TIME_ID = 1;
     private Spinner sp;
@@ -96,7 +97,6 @@ public class NuevaTarea extends AppCompatActivity {
         ArrayAdapter<String> adapter = new ArrayAdapter<>(this, R.layout.support_simple_spinner_dropdown_item, transportes);
         sp.setAdapter(adapter);
 
-        s = sp.getSelectedItem().toString();
 
         Button bBuscar = (Button) findViewById(R.id.bBuscar);
 
@@ -108,21 +108,55 @@ public class NuevaTarea extends AppCompatActivity {
         Button bCrear = (Button) findViewById(R.id.bCrear);
 
         bCrear.setOnClickListener((View v) -> {
-            if(!excepciones()){
-                crear(duracion);
+            if(!excepciones()) {
+                crear(duracion, id);
             }
         });
-
-
     }
 
 
-    private void crear(long duracion){
+    private void crear(long duracion, int id){
         //TODO: Insetar valores en la base de datos
-        Calendar fechaTarea = null;
+        Calendar fechaTarea = Calendar.getInstance();
         fechaTarea.set(a, m, d, h, min, 0);
         long timeTarea = fechaTarea.getTimeInMillis();
         timeTarea = timeTarea - duracion - 900000 ;
+        Toast.makeText(getApplicationContext(), getString(R.string.changed_to, h + ":" + m), Toast.LENGTH_LONG).show();
+        setAlarm(1, timeTarea, NuevaTarea.this);
+
+        insertarBD(timeTarea, id);
+
+    }
+
+    private void insertarBD(long alarma, int id){
+
+        TareaDBHelper dbHelper = new TareaDBHelper(getApplicationContext());
+        SQLiteDatabase db = dbHelper.getWritableDatabase();
+
+
+        ContentValues values = new ContentValues();
+        Calendar fechaTarea = Calendar.getInstance();
+        fechaTarea.set(a, m, d, h, min, 0);
+        long timeTarea = fechaTarea.getTimeInMillis();
+
+        String origen = "Lat: " + latOrigen + " Lon: " + lonOrigen;
+        String destino = "Lat: " + latDestino + " Lon: " + lonDestino;
+
+        values.put(TareaContract.TareaEntry.ASUNTO, asunto.getText().toString());
+        values.put(TareaContract.TareaEntry.FECHA, timeTarea + "");
+        values.put(TareaContract.TareaEntry.ALARMA, alarma + "");
+        values.put(TareaContract.TareaEntry.TRANSPORTE, sp.getSelectedItem().toString());
+        values.put(TareaContract.TareaEntry.ORIGEN, origen);
+        values.put(TareaContract.TareaEntry.DESTINO, destino);
+
+        if(id != 0){
+            String where = TareaContract.TareaEntry._ID + " = ?";
+            String[] whereArg = {String.valueOf(id)};
+            db.update(TareaContract.TareaEntry.TABLE_NAME, values, where, whereArg);
+        } else {
+            db.insert(TareaContract.TareaEntry.TABLE_NAME, null, values);
+        }
+
 
 
 
@@ -142,6 +176,7 @@ public class NuevaTarea extends AppCompatActivity {
                     lonOrigen.setText(origen.longitude + "");
                     lonDestino.setText(destino.longitude + "");
                     duracion = (long) extras.get("duracion");
+                    duracion = duracion * 6000;
                 }
             });
 
@@ -242,5 +277,14 @@ public class NuevaTarea extends AppCompatActivity {
         }
 
         return false;
-        }
     }
+
+    public static void setAlarm(int i, Long timestamp, Context ctx) {
+        AlarmManager alarmManager = (AlarmManager) ctx.getSystemService(ALARM_SERVICE);
+        Intent alarmIntent = new Intent(ctx, AlarmReceiver.class);
+        PendingIntent pendingIntent;
+        pendingIntent = PendingIntent.getBroadcast(ctx, i, alarmIntent, PendingIntent.FLAG_ONE_SHOT);
+        alarmIntent.setData((Uri.parse("custom://" + System.currentTimeMillis())));
+        alarmManager.set(AlarmManager.RTC_WAKEUP, timestamp, pendingIntent);
+    }
+}
