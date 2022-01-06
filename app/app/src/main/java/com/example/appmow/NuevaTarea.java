@@ -23,6 +23,7 @@ import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.Spinner;
+import android.widget.TextView;
 import android.widget.TimePicker;
 import android.widget.Toast;
 
@@ -35,6 +36,7 @@ import java.util.List;
 
 public class NuevaTarea extends AppCompatActivity {
     EditText fecha, hora, asunto, latOrigen, latDestino, lonOrigen, lonDestino;
+    TextView transporte;
     private int a, m, d, h, min;
     static final int DATE_ID = 0;
     static final int TIME_ID = 1;
@@ -53,7 +55,7 @@ public class NuevaTarea extends AppCompatActivity {
         fecha = (EditText) findViewById(R.id.idFecha);
         hora = (EditText) findViewById(R.id.idHora);
         asunto = (EditText) findViewById(R.id.idAsunto);
-        sp = findViewById(R.id.spinner);
+        transporte = (TextView) findViewById(R.id.idTransporte);
 
         Intent idInt = getIntent();
         int id = idInt.getIntExtra("id", 0);
@@ -87,16 +89,6 @@ public class NuevaTarea extends AppCompatActivity {
         hora.setOnClickListener((View) -> {
             showDialog(TIME_ID);
         });
-
-
-        List<String> transportes = new ArrayList<>();
-        transportes.add("Andando");
-        transportes.add("Vehiculo");
-        transportes.add("Bicicleta");
-
-        ArrayAdapter<String> adapter = new ArrayAdapter<>(this, R.layout.support_simple_spinner_dropdown_item, transportes);
-        sp.setAdapter(adapter);
-
 
         Button bBuscar = (Button) findViewById(R.id.bBuscar);
 
@@ -145,7 +137,7 @@ public class NuevaTarea extends AppCompatActivity {
         values.put(TareaContract.TareaEntry.ASUNTO, asunto.getText().toString());
         values.put(TareaContract.TareaEntry.FECHA, timeTarea + "");
         values.put(TareaContract.TareaEntry.ALARMA, alarma + "");
-        values.put(TareaContract.TareaEntry.TRANSPORTE, sp.getSelectedItem().toString());
+        values.put(TareaContract.TareaEntry.TRANSPORTE, transporte.getText().toString());
         values.put(TareaContract.TareaEntry.ORIGEN, origen);
         values.put(TareaContract.TareaEntry.DESTINO, destino);
 
@@ -171,10 +163,12 @@ public class NuevaTarea extends AppCompatActivity {
                     Bundle extras = data.getExtras();
                     LatLng origen = (LatLng) extras.get("origen");
                     LatLng destino = (LatLng) extras.get("destino");
+                    String strTransporte = (String) extras.get("transporte");
                     latOrigen.setText(origen.latitude + "");
                     latDestino.setText(destino.latitude + "");
                     lonOrigen.setText(origen.longitude + "");
                     lonDestino.setText(destino.longitude + "");
+                    transporte.setText(strTransporte);
                     duracion = (long) extras.get("duracion");
                     duracion = duracion * 6000;
                 }
