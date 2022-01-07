@@ -40,6 +40,7 @@ public class NuevaTarea extends AppCompatActivity {
     static final int TIME_ID = 1;
     private Spinner sp;
     private long duracion = 0;
+    static final long WAIT = 900000;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -120,7 +121,7 @@ public class NuevaTarea extends AppCompatActivity {
         Calendar fechaTarea = Calendar.getInstance();
         fechaTarea.set(a, m, d, h, min, 0);
         long timeTarea = fechaTarea.getTimeInMillis();
-        timeTarea = timeTarea - duracion - 900000 ;
+        timeTarea = timeTarea - duracion -  WAIT;
         Toast.makeText(getApplicationContext(), getString(R.string.changed_to, h + ":" + m), Toast.LENGTH_LONG).show();
         setAlarm(1, timeTarea, NuevaTarea.this);
 
@@ -262,6 +263,7 @@ public class NuevaTarea extends AppCompatActivity {
             return true;
         }
 
+
         if(latOrigen.getText().toString() == null || latOrigen.getText().toString().isEmpty()
                 || lonOrigen.getText().toString() == null || lonOrigen.getText().toString().isEmpty()) {
             al.setMessage("No se ha seleccionado un punto de origen");
@@ -272,6 +274,20 @@ public class NuevaTarea extends AppCompatActivity {
         if (latDestino.getText().toString() == null || latDestino.getText().toString().isEmpty()
                 || lonDestino.getText().toString() == null || lonDestino.getText().toString().isEmpty()) {
             al.setMessage("No se ha seleccionado un punto de destino");
+            al.show();
+            return true;
+        }
+
+
+        Calendar today = Calendar.getInstance();
+        Calendar aux = Calendar.getInstance();
+        aux.set(a, m, d, h, min, 0);
+
+        long milToday = today.getTimeInMillis();
+        long milAux = aux.getTimeInMillis();
+
+        if(milAux <= milToday + 90000 + duracion){
+            al.setMessage("La fecha seleccionada para la alarma es anterior a la fecha actual");
             al.show();
             return true;
         }
