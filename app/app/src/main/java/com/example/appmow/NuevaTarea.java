@@ -103,13 +103,14 @@ public class NuevaTarea extends AppCompatActivity {
         bCrear.setOnClickListener((View v) -> {
             if(!excepciones()) {
                 crear(duracion, id);
+                Intent intent = new Intent(v.getContext(), MainActivity.class);
+                startActivity(intent);
             }
         });
     }
 
 
     private void crear(long duracion, int id){
-        //TODO: Insetar valores en la base de datos
         Calendar fechaTarea = Calendar.getInstance();
         fechaTarea.set(a, m, d, h, min, 0);
         long timeTarea = fechaTarea.getTimeInMillis();
@@ -132,8 +133,8 @@ public class NuevaTarea extends AppCompatActivity {
         fechaTarea.set(a, m, d, h, min, 0);
         long timeTarea = fechaTarea.getTimeInMillis();
 
-        String origen = "Lat: " + latOrigen + " Lon: " + lonOrigen;
-        String destino = "Lat: " + latDestino + " Lon: " + lonDestino;
+        String origen = "Lat: " + latOrigen.getText() + " Lon: " + lonOrigen.getText();
+        String destino = "Lat: " + latDestino.getText() + " Lon: " + lonDestino.getText();
 
         values.put(TareaContract.TareaEntry.ASUNTO, asunto.getText().toString());
         values.put(TareaContract.TareaEntry.FECHA, timeTarea + "");
@@ -149,9 +150,6 @@ public class NuevaTarea extends AppCompatActivity {
         } else {
             db.insert(TareaContract.TareaEntry.TABLE_NAME, null, values);
         }
-
-
-
 
     }
 
