@@ -19,5 +19,5 @@
     <string name="txtOrigen">Direccion Origen</string>
     <string name="txtDestino">Direccion Destino</string>
     <string name="new_notification">Nueva notificación</string>
-    <string name="changed_to">Notificación cambiada a las %s</string>
+    <string name="changed_to">Notificación añadida a las %s</string>
 </resources>

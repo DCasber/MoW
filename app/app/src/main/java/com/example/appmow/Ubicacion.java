@@ -8,7 +8,10 @@ import android.os.Bundle;
 import android.os.StrictMode;
 import android.util.Log;
 import android.view.View;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -70,10 +73,12 @@ public class Ubicacion extends AppCompatActivity  implements GoogleMap.OnMapClic
 
     private GoogleMap googleMap;
     private LatLng origen, destino;
+    private String modoTransporte;
     private String duracion = "";
     TextView eOrigen, eDestino, tvDuration;
     private Integer mapCount = 0;
     private Button limpiar, continuar;
+    private Spinner transportes;
 
     private final static int LOCATION_REQUEST_CODE = 23;
     boolean locationPermission = false;
@@ -91,7 +96,7 @@ public class Ubicacion extends AppCompatActivity  implements GoogleMap.OnMapClic
         StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
         StrictMode.setThreadPolicy(policy);
 
-
+        transportes = findViewById(R.id.spinner);
         eOrigen = (TextView) findViewById(R.id.eOrigen);
         eDestino = (TextView) findViewById(R.id.eDestino);
         tvDuration = (TextView) findViewById(R.id.tvDistDurat);
@@ -111,6 +116,8 @@ public class Ubicacion extends AppCompatActivity  implements GoogleMap.OnMapClic
                 googleMap.clear();
                 origen = null;
                 destino = null;
+                transportes.setEnabled(false);
+
 
             }
         });
@@ -125,6 +132,7 @@ public class Ubicacion extends AppCompatActivity  implements GoogleMap.OnMapClic
                                                  data.putExtra("destino", destino);
                                                  long durationLong = parseDuracion(duracion);
                                                  data.putExtra("duracion", durationLong);
+                                                 data.putExtra("transporte", modoTransporte);
                                                  setResult(RESULT_OK, data);
 
                                                  finish();
@@ -133,6 +141,46 @@ public class Ubicacion extends AppCompatActivity  implements GoogleMap.OnMapClic
 
                                      }
         );
+
+        List<String> listaTransportes = new ArrayList<>();
+        listaTransportes.add("Andando");
+        listaTransportes.add("Vehiculo");
+        listaTransportes.add("Bicicleta");
+
+        ArrayAdapter<String> adapter = new ArrayAdapter<>(this, R.layout.support_simple_spinner_dropdown_item, listaTransportes);
+        transportes.setAdapter(adapter);
+
+        transportes.setEnabled(false);
+
+        transportes.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parentView, View selectedItemView, int position, long id) {
+                if(origen != null && destino != null){
+
+                    transportes.setEnabled(true);
+
+                    modoTransporte = transportes.getSelectedItem().toString();
+
+                    googleMap.clear();
+
+                    Findroutes(origen, destino,modoTransporte);
+
+                    try {
+                        duracion = getDuracion(origen, destino,modoTransporte);
+                    } catch (IOException | JSONException e) {
+                        e.printStackTrace();
+                    }
+
+                    tvDuration.setText(duracion + "");
+                }
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parentView) {
+
+            }
+
+        });
 
         String apiKey = "AIzaSyD6A7Zni9DVryKVro8--jjmGmy8Zq3auxc";
         if (!Places.isInitialized()) {
@@ -169,10 +217,15 @@ public class Ubicacion extends AppCompatActivity  implements GoogleMap.OnMapClic
                     destino = point;
 
                     googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(destino, 10));
-                    Findroutes(origen, destino);
+
+                    modoTransporte = transportes.getSelectedItem().toString();
+
+                    transportes.setEnabled(true);
+
+                    Findroutes(origen, destino,modoTransporte);
 
                     try {
-                        duracion = getDuracion(origen, destino);
+                        duracion = getDuracion(origen, destino,modoTransporte);
                     } catch (IOException | JSONException e) {
                         e.printStackTrace();
                     }
@@ -238,10 +291,15 @@ public class Ubicacion extends AppCompatActivity  implements GoogleMap.OnMapClic
             this.destino = point;
 
             googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(destino, 10));
-            Findroutes(origen, destino);
+
+            modoTransporte = transportes.getSelectedItem().toString();
+
+            transportes.setEnabled(true);
+
+            Findroutes(origen, destino,modoTransporte);
 
             try {
-                duracion = getDuracion(origen, destino);
+                duracion = getDuracion(origen, destino, modoTransporte);
             } catch (IOException | JSONException e) {
                 e.printStackTrace();
             }
@@ -256,12 +314,15 @@ public class Ubicacion extends AppCompatActivity  implements GoogleMap.OnMapClic
 
 
 
-    private String getDuracion(LatLng origen, LatLng destino) throws IOException, JSONException {
+    private String getDuracion(LatLng origen, LatLng destino, String mode) throws IOException, JSONException {
 
 
-            String stringUrl = "https://maps.googleapis.com/maps/api/distancematrix/json?units=metric&origins="+
-                    origen.latitude+","+origen.longitude+
-                    "&destinations="+destino.latitude+","+destino.longitude+"&key=AIzaSyD6A7Zni9DVryKVro8--jjmGmy8Zq3auxc&mode=driving";
+        mode = parseMode(mode);
+
+        String stringUrl = "https://maps.googleapis.com/maps/api/distancematrix/json?units=metric&origins="+
+                            origen.latitude+","+origen.longitude+
+                            "&destinations="+destino.latitude+","+destino.longitude+"&key=AIzaSyD6A7Zni9DVryKVro8--jjmGmy8Zq3auxc&mode="
+                            + mode;
 
         String json;
         json = NetworkUtils.getJSONFromAPI(stringUrl);
@@ -278,6 +339,20 @@ public class Ubicacion extends AppCompatActivity  implements GoogleMap.OnMapClic
 
         return duration;
 
+
+    }
+
+    private String parseMode(String mode) {
+
+        if(mode.equals("Andando")){
+            mode = "walking";
+        } else if (mode.equals("Vehiculo")){
+            mode = "driving";
+        }
+        else if(mode.equals("Bicicleta")){
+            mode = "bicycling";
+        }
+        return mode;
 
     }
 
@@ -345,13 +420,25 @@ public class Ubicacion extends AppCompatActivity  implements GoogleMap.OnMapClic
 
 
     // function to find Routes.
-    public void Findroutes(LatLng Start, LatLng End) {
+    public void Findroutes(LatLng Start, LatLng End, String mode) {
         if (Start == null || End == null) {
             Toast.makeText(Ubicacion.this, "Unable to get location", Toast.LENGTH_LONG).show();
         } else {
 
+            AbstractRouting.TravelMode transporte;
+
+            if (mode.equals("Andando")){
+                transporte = AbstractRouting.TravelMode.WALKING;
+
+            } else if (mode.equals("Vehiculo")){
+                transporte = AbstractRouting.TravelMode.DRIVING;
+            } else{
+                transporte = AbstractRouting.TravelMode.BIKING;
+            }
+
+
             Routing routing = new Routing.Builder()
-                    .travelMode(AbstractRouting.TravelMode.DRIVING)
+                    .travelMode(transporte)
                     .withListener(this)
                     .alternativeRoutes(true)
                     .waypoints(Start, End)
@@ -414,7 +501,7 @@ public class Ubicacion extends AppCompatActivity  implements GoogleMap.OnMapClic
 
     @Override
     public void onRoutingCancelled() {
-        Findroutes(origen, destino);
+        Findroutes(origen, destino, modoTransporte);
     }
 
 }
