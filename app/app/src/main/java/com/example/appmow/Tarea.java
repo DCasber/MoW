@@ -11,6 +11,7 @@ import java.sql.Date;
 import java.sql.Time;
 
 public final class Tarea {
+    private String id;
     private String asunto;
     private String fecha;
     private String alarma;
@@ -18,13 +19,18 @@ public final class Tarea {
     private String destino;
     private String transporte;
 
-    public Tarea(String asunto, String fecha,  String alarma, String origen, String destino, String transporte) {
+    public Tarea(String id, String asunto, String fecha,  String alarma, String origen, String destino, String transporte) {
+        this.id = id;
         this.asunto = asunto;
         this.fecha = fecha;
         this.origen = origen;
         this.destino = destino;
         this.alarma = alarma;
         this.transporte = transporte;
+    }
+
+    public String getID() {
+        return id;
     }
 
     public String getAsunto() {

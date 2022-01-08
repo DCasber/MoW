@@ -2,16 +2,17 @@
 <resources>
     <string name="app_name">appMoW</string>
     <string name="misTareas">My Tasks</string>
+    <string name="aniadir">Add</string>
     <string name="labelFecha">Date:</string>
     <string name="labelAlarma">Alarm:</string>
-    <string name="labelTransporte">Transport:</string>
+    <string name="labelDesplazamiento">Travel Mode:</string>
     <string name="labelMiUbicación">My Ubication:</string>
     <string name="labelUbicaciónTarea">Task Ubication</string>
     <string name="alarma">Alarm:</string>
     <string name="asunto">Subject:</string>
     <string name="origen">Origin:</string>
     <string name="destino">Destination:</string>
-    <string name="transporte">Means of Transport:</string>
+    <string name="desplazamiento">Travel Mode:</string>
     <string name="hora">Hour:</string>
     <string name="crearTarea">New Task</string>
     <string name="titlulo_pickers">Obtain date and hour</string>
@@ -21,4 +22,13 @@
     <string name="txtDestino">Destination address</string>
     <string name="new_notification">New Notification</string>
     <string name="changed_to">Notification added to %s</string>
+    <string name="eliminar">Delete</string>
+    <string name="editar">Edit</string>
+    <string name="limpiar">Clean</string>
+    <string name="continuar">Next</string>
+    <string name="latitud">Latitude:</string>
+    <string name="longitud">Longitude:</string>
+    <string name="crear">Create</string>
+    <string name="buscar">Search</string>
+    <string name="ubicación">Ubication</string>
 </resources>

@@ -35,8 +35,8 @@ import java.util.GregorianCalendar;
 import java.util.List;
 
 public class NuevaTarea extends AppCompatActivity {
-    EditText fecha, hora, asunto, latOrigen, latDestino, lonOrigen, lonDestino;
-    TextView transporte;
+    EditText fecha, hora, asunto;
+    TextView transporte,latOrigen, latDestino, lonOrigen, lonDestino;
     private int a, m, d, h, min;
     static final int DATE_ID = 0;
     static final int TIME_ID = 1;
@@ -49,10 +49,10 @@ public class NuevaTarea extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_nueva_tarea);
 
-        latOrigen = (EditText) findViewById(R.id.idLatOrigen);
-        latDestino = (EditText) findViewById(R.id.idLatDestino);
-        lonOrigen = (EditText) findViewById(R.id.idLonOrigen);
-        lonDestino = (EditText) findViewById(R.id.idLonDestino);
+        latOrigen = (TextView) findViewById(R.id.idLatOrigen);
+        latDestino = (TextView) findViewById(R.id.idLatDestino);
+        lonOrigen = (TextView) findViewById(R.id.idLonOrigen);
+        lonDestino = (TextView) findViewById(R.id.idLonDestino);
         fecha = (EditText) findViewById(R.id.idFecha);
         hora = (EditText) findViewById(R.id.idHora);
         asunto = (EditText) findViewById(R.id.idAsunto);
@@ -133,8 +133,8 @@ public class NuevaTarea extends AppCompatActivity {
         fechaTarea.set(a, m, d, h, min, 0);
         long timeTarea = fechaTarea.getTimeInMillis();
 
-        String origen = "Lat: " + latOrigen.getText() + " Lon: " + lonOrigen.getText();
-        String destino = "Lat: " + latDestino.getText() + " Lon: " + lonDestino.getText();
+        String origen = latOrigen.getText() + "," + lonOrigen.getText();
+        String destino = latDestino.getText() + "," + lonDestino.getText();
 
         values.put(TareaContract.TareaEntry.ASUNTO, asunto.getText().toString());
         values.put(TareaContract.TareaEntry.FECHA, timeTarea + "");
