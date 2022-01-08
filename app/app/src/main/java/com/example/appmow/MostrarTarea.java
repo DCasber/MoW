@@ -8,6 +8,7 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.text.format.DateFormat;
 import android.util.Pair;
 import android.view.View;
 import android.widget.Button;
@@ -33,13 +34,16 @@ import com.google.android.gms.maps.model.Polyline;
 import com.google.android.gms.maps.model.PolylineOptions;
 import com.google.android.material.snackbar.Snackbar;
 
+import java.sql.Date;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
 
 public class MostrarTarea extends AppCompatActivity implements OnMapReadyCallback, RoutingListener {
 
     TextView tAsunto, tFecha, tAlarma, tTransporte;
-    Button bEliminar;
+    Button bEliminar, bEditar;
 
     private GoogleMap googleMap;
     private LatLng origen, destino;
@@ -58,6 +62,7 @@ public class MostrarTarea extends AppCompatActivity implements OnMapReadyCallbac
         tTransporte = (TextView) findViewById(R.id.transporteTarea);
 
         bEliminar = (Button) findViewById(R.id.bEliminar);
+        bEditar = (Button) findViewById(R.id.bEditar);
 
         String asunto = "";
         String transporte = "";
@@ -83,6 +88,12 @@ public class MostrarTarea extends AppCompatActivity implements OnMapReadyCallbac
             startActivity(intent);
         });
 
+        bEditar.setOnClickListener(v -> {
+            Intent intent = new Intent(v.getContext(), NuevaTarea.class);
+            intent.putExtra("id", id);
+            startActivity(intent);
+        });
+
         Cursor cursor = db.rawQuery("SELECT * FROM " + TareaContract.TareaEntry.TABLE_NAME + " WHERE _ID = ?", new String[] {id + ""});
         while (cursor.moveToNext()) {
 
@@ -92,12 +103,13 @@ public class MostrarTarea extends AppCompatActivity implements OnMapReadyCallbac
             ubicacionOrigen = cursor.getString(4);
             ubicacionDestino = cursor.getString(5);
             transporte = cursor.getString(6);
-
+            String [] fechaHora = fecha.split(",");
+            String [] alarmaHora = alarma.split(",");
 
             tAsunto.setText(asunto);
-            tAlarma.setText(alarma);
+            tAlarma.setText("Día : " + alarmaHora[0] + " a las " + alarmaHora[1]);
             tTransporte.setText(transporte);
-            tFecha.setText(fecha);
+            tFecha.setText("Día : " + fechaHora[0] + " a las " + fechaHora[1]);
 
 
             double latOrigen, latDestino, longOrigen, longDestino;
@@ -116,11 +128,6 @@ public class MostrarTarea extends AppCompatActivity implements OnMapReadyCallbac
             SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                     .findFragmentById(R.id.map);
             mapFragment.getMapAsync(this);
-
-
-
-
-
 
         }
 

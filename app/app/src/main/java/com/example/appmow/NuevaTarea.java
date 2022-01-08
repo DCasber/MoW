@@ -14,9 +14,11 @@ import android.app.TimePickerDialog;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
+import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
 import android.os.Bundle;
+import android.provider.Settings;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
@@ -29,6 +31,8 @@ import android.widget.Toast;
 
 import com.google.android.gms.maps.model.LatLng;
 
+import java.sql.Date;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
@@ -62,16 +66,45 @@ public class NuevaTarea extends AppCompatActivity {
         int id = idInt.getIntExtra("id", 0);
 
         if(id != 0) {
-            //Esta función sirve para cuando se accede mediante edit
-            //TODO: Obtener tarea por ID y mostrar por pantalla los valores
-            latOrigen.setText(0);
-            latDestino.setText(0);
-            lonOrigen.setText(0);
-            lonDestino.setText(0);
-            fecha.setText("00/00/0000");
-            hora.setText("00:00");
-            asunto.setText("00000");
-            //TODO: Mostrar valor spinner
+            TareaDBHelper th = new TareaDBHelper(getApplicationContext());
+            SQLiteDatabase db = th.getReadableDatabase();
+            Cursor cursor = db.rawQuery("SELECT * FROM " + TareaContract.TareaEntry.TABLE_NAME + " WHERE _ID = ?", new String[] {id + ""});
+            while(cursor.moveToNext()){
+                asunto.setText(cursor.getString(1));
+                transporte.setText(cursor.getString(6));
+                String txtFecha = cursor.getString(2);
+                String [] fechaHora = txtFecha.split(",");
+
+
+                fecha.setText(fechaHora[0]);
+                hora.setText(fechaHora[1]);
+
+                String [] valFecha = fechaHora[0].split("/");
+                String [] valHora = fechaHora[1].split(":");
+
+                a = Integer.parseInt(valFecha[2]);
+                m = Integer.parseInt(valFecha[1]);
+                d = Integer.parseInt(valFecha[0]);
+
+                h = Integer.parseInt(valHora[0]);
+                min = Integer.parseInt(valHora[1]);
+
+                System.out.println("El dia es: " + d + "/" + m + "/" + a + " a las " + h + ":" + min);
+
+
+                String ubicacionOrigen = cursor.getString(4);
+                String ubicacionDestino = cursor.getString(5);
+
+
+                String[] ubOrigen = ubicacionOrigen.split(",");
+                String[] ubDestino = ubicacionDestino.split(",");
+
+                latOrigen.setText(ubOrigen[0]);
+                latDestino.setText(ubDestino[0]);
+                lonOrigen.setText(ubOrigen[1]);
+                lonDestino.setText(ubDestino[1]);
+            }
+
         }
 
         Calendar C = Calendar.getInstance();
@@ -95,6 +128,12 @@ public class NuevaTarea extends AppCompatActivity {
 
         bBuscar.setOnClickListener((View v) -> {
             Intent intent = new Intent(v.getContext(), Ubicacion.class);
+            if (id != 0){
+                intent.putExtra("latOrigen", latOrigen.getText());
+                intent.putExtra("latDestino", latDestino.getText());
+                intent.putExtra("lonOrigen", lonOrigen.getText());
+                intent.putExtra("lonDestino", lonDestino.getText());
+            }
             buscarUbicacion.launch(intent);
         });
 
@@ -115,29 +154,33 @@ public class NuevaTarea extends AppCompatActivity {
         fechaTarea.set(a, m, d, h, min, 0);
         long timeTarea = fechaTarea.getTimeInMillis();
         timeTarea = timeTarea - duracion -  WAIT;
-        Toast.makeText(getApplicationContext(), getString(R.string.changed_to, h + ":" + m), Toast.LENGTH_LONG).show();
+
+
+        SimpleDateFormat formatter = new SimpleDateFormat("dd/MM/yyyy,HH:mm");
+
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTimeInMillis(timeTarea);
+        String alarma = formatter.format(calendar.getTime());
+
+        Toast.makeText(getApplicationContext(), getString(R.string.changed_to, alarma), Toast.LENGTH_LONG).show();
         setAlarm(1, timeTarea, NuevaTarea.this);
 
-        insertarBD(timeTarea, id);
+        insertarBD(alarma, id);
 
     }
 
-    private void insertarBD(long alarma, int id){
+    private void insertarBD(String alarma, int id){
 
         TareaDBHelper dbHelper = new TareaDBHelper(getApplicationContext());
         SQLiteDatabase db = dbHelper.getWritableDatabase();
 
-
         ContentValues values = new ContentValues();
-        Calendar fechaTarea = Calendar.getInstance();
-        fechaTarea.set(a, m, d, h, min, 0);
-        long timeTarea = fechaTarea.getTimeInMillis();
 
         String origen = latOrigen.getText() + "," + lonOrigen.getText();
         String destino = latDestino.getText() + "," + lonDestino.getText();
 
         values.put(TareaContract.TareaEntry.ASUNTO, asunto.getText().toString());
-        values.put(TareaContract.TareaEntry.FECHA, timeTarea + "");
+        values.put(TareaContract.TareaEntry.FECHA, fecha.getText() + "," + hora.getText());
         values.put(TareaContract.TareaEntry.ALARMA, alarma + "");
         values.put(TareaContract.TareaEntry.TRANSPORTE, transporte.getText().toString());
         values.put(TareaContract.TareaEntry.ORIGEN, origen);
@@ -169,7 +212,8 @@ public class NuevaTarea extends AppCompatActivity {
                     lonDestino.setText(destino.longitude + "");
                     transporte.setText(strTransporte);
                     duracion = (long) extras.get("duracion");
-                    duracion = duracion * 6000;
+                    System.out.println("La duracion es: " + duracion);
+                    duracion = duracion * 60000;
                 }
             });
 
@@ -177,7 +221,16 @@ public class NuevaTarea extends AppCompatActivity {
 
 
     private void colocar_hora() {
-        hora.setText( h + ":" + min + " ");
+        if(h < 10 && min < 10) {
+            hora.setText( "0" + h + ":0" + min);
+        } else if(h < 10 && min >= 10){
+            hora.setText( "0" + h + ":" + min);
+        } else if(min < 10 && h >= 10){
+            hora.setText( h + ":0" + min);
+        } else {
+            hora.setText( h + ":" + min);
+        }
+
     }
 
     private TimePickerDialog.OnTimeSetListener onTimeSetListener =
@@ -190,7 +243,16 @@ public class NuevaTarea extends AppCompatActivity {
             };
 
     private void colocar_fecha() {
-        fecha.setText( d + "/" + (m + 1) + "/" + a + " ");
+        if(m < 9 && d < 10) {
+            fecha.setText( "0" + d + "/0" + (m + 1) + "/" + a);
+        } else if(m < 9 && d >= 10){
+            fecha.setText( d + "/0" + (m + 1) + "/" + a);
+        } else if(d < 10 && m >= 9){
+            fecha.setText( "0" + d + "/" + (m + 1) + "/" + a);
+        } else {
+            fecha.setText( d + "/" + (m + 1) + "/" + a);
+        }
+
     }
 
     private DatePickerDialog.OnDateSetListener nDateSetListener =
