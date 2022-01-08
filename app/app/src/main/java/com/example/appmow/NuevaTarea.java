@@ -35,23 +35,24 @@ import java.util.GregorianCalendar;
 import java.util.List;
 
 public class NuevaTarea extends AppCompatActivity {
-    EditText fecha, hora, asunto, latOrigen, latDestino, lonOrigen, lonDestino;
-    TextView transporte;
+    EditText fecha, hora, asunto;
+    TextView transporte,latOrigen, latDestino, lonOrigen, lonDestino;
     private int a, m, d, h, min;
     static final int DATE_ID = 0;
     static final int TIME_ID = 1;
     private Spinner sp;
     private long duracion = 0;
+    static final long WAIT = 900000;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_nueva_tarea);
 
-        latOrigen = (EditText) findViewById(R.id.idLatOrigen);
-        latDestino = (EditText) findViewById(R.id.idLatDestino);
-        lonOrigen = (EditText) findViewById(R.id.idLonOrigen);
-        lonDestino = (EditText) findViewById(R.id.idLonDestino);
+        latOrigen = (TextView) findViewById(R.id.idLatOrigen);
+        latDestino = (TextView) findViewById(R.id.idLatDestino);
+        lonOrigen = (TextView) findViewById(R.id.idLonOrigen);
+        lonDestino = (TextView) findViewById(R.id.idLonDestino);
         fecha = (EditText) findViewById(R.id.idFecha);
         hora = (EditText) findViewById(R.id.idHora);
         asunto = (EditText) findViewById(R.id.idAsunto);
@@ -102,17 +103,18 @@ public class NuevaTarea extends AppCompatActivity {
         bCrear.setOnClickListener((View v) -> {
             if(!excepciones()) {
                 crear(duracion, id);
+                Intent intent = new Intent(v.getContext(), MainActivity.class);
+                startActivity(intent);
             }
         });
     }
 
 
     private void crear(long duracion, int id){
-        //TODO: Insetar valores en la base de datos
         Calendar fechaTarea = Calendar.getInstance();
         fechaTarea.set(a, m, d, h, min, 0);
         long timeTarea = fechaTarea.getTimeInMillis();
-        timeTarea = timeTarea - duracion - 900000 ;
+        timeTarea = timeTarea - duracion -  WAIT;
         Toast.makeText(getApplicationContext(), getString(R.string.changed_to, h + ":" + m), Toast.LENGTH_LONG).show();
         setAlarm(1, timeTarea, NuevaTarea.this);
 
@@ -131,8 +133,8 @@ public class NuevaTarea extends AppCompatActivity {
         fechaTarea.set(a, m, d, h, min, 0);
         long timeTarea = fechaTarea.getTimeInMillis();
 
-        String origen = "Lat: " + latOrigen + " Lon: " + lonOrigen;
-        String destino = "Lat: " + latDestino + " Lon: " + lonDestino;
+        String origen = latOrigen.getText() + "," + lonOrigen.getText();
+        String destino = latDestino.getText() + "," + lonDestino.getText();
 
         values.put(TareaContract.TareaEntry.ASUNTO, asunto.getText().toString());
         values.put(TareaContract.TareaEntry.FECHA, timeTarea + "");
@@ -148,9 +150,6 @@ public class NuevaTarea extends AppCompatActivity {
         } else {
             db.insert(TareaContract.TareaEntry.TABLE_NAME, null, values);
         }
-
-
-
 
     }
 
@@ -256,6 +255,7 @@ public class NuevaTarea extends AppCompatActivity {
             return true;
         }
 
+
         if(latOrigen.getText().toString() == null || latOrigen.getText().toString().isEmpty()
                 || lonOrigen.getText().toString() == null || lonOrigen.getText().toString().isEmpty()) {
             al.setMessage("No se ha seleccionado un punto de origen");
@@ -266,6 +266,20 @@ public class NuevaTarea extends AppCompatActivity {
         if (latDestino.getText().toString() == null || latDestino.getText().toString().isEmpty()
                 || lonDestino.getText().toString() == null || lonDestino.getText().toString().isEmpty()) {
             al.setMessage("No se ha seleccionado un punto de destino");
+            al.show();
+            return true;
+        }
+
+
+        Calendar today = Calendar.getInstance();
+        Calendar aux = Calendar.getInstance();
+        aux.set(a, m, d, h, min, 0);
+
+        long milToday = today.getTimeInMillis();
+        long milAux = aux.getTimeInMillis();
+
+        if(milAux <= milToday + 90000 + duracion){
+            al.setMessage("La fecha seleccionada para la alarma es anterior a la fecha actual");
             al.show();
             return true;
         }
