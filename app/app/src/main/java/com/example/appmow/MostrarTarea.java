@@ -71,6 +71,8 @@ public class MostrarTarea extends AppCompatActivity implements OnMapReadyCallbac
         String ubicacionOrigen = "";
         String ubicacionDestino = "";
 
+
+
         Bundle extras = getIntent().getExtras();
         String strTarea = (String) extras.get("tarea");
 
@@ -87,6 +89,7 @@ public class MostrarTarea extends AppCompatActivity implements OnMapReadyCallbac
             Intent intent = new Intent(v.getContext(), MainActivity.class);
             startActivity(intent);
         });
+
 
         bEditar.setOnClickListener(v -> {
             Intent intent = new Intent(v.getContext(), NuevaTarea.class);
