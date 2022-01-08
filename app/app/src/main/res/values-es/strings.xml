@@ -32,4 +32,5 @@
     <string name="crear">Crear</string>
     <string name="buscar">Buscar</string>
     <string name="ubicación">Ubicación</string>
+    <string name="duracion">Duración</string>
 </resources>
