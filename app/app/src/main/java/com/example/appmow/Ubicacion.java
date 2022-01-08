@@ -101,6 +101,7 @@ public class Ubicacion extends AppCompatActivity  implements GoogleMap.OnMapClic
         eDestino = (TextView) findViewById(R.id.eDestino);
         tvDuration = (TextView) findViewById(R.id.tvDistDurat);
 
+
         eOrigen.setText("");
         eDestino.setText("");
 
@@ -248,6 +249,48 @@ public class Ubicacion extends AppCompatActivity  implements GoogleMap.OnMapClic
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
+
+        Bundle extras = getIntent().getExtras();
+        Integer id = (Integer) extras.get("id");
+
+        if (id != 0){
+            double latOrigen = (Double) extras.get("latOrigen");
+            double latDestino = (Double) extras.get("latDestino");
+            double lonOrigen = (Double) extras.get("lonOrigen");
+            double lonDestino = (Double) extras.get("lonDestino");
+
+            modoTransporte = (String) extras.get("modoTransporte");
+
+            origen = new LatLng(latOrigen, lonOrigen);
+            destino = new LatLng(latDestino, lonDestino);
+
+            mapCount = 2;
+
+            googleMap.addMarker(new MarkerOptions()
+                    .position(origen)
+                    .title("Origen"));
+
+            googleMap.addMarker(new MarkerOptions()
+                    .position(destino)
+                    .title("Destino"));
+
+            googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(destino, 10));
+
+            transportes.setEnabled(true);
+
+            Findroutes(origen, destino,modoTransporte);
+
+            try {
+                duracion = getDuracion(origen, destino,modoTransporte);
+            } catch (IOException | JSONException e) {
+                e.printStackTrace();
+            }
+
+            tvDuration.setText(duracion + "");
+
+        }
+
+
 
     }
 

@@ -18,9 +18,8 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
 import android.os.Bundle;
-import android.provider.Settings;
+import android.os.StrictMode;
 import android.view.View;
-import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.EditText;
@@ -31,12 +30,20 @@ import android.widget.Toast;
 
 import com.google.android.gms.maps.model.LatLng;
 
-import java.sql.Date;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
+import java.net.ProtocolException;
+import java.net.URL;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
+import java.time.Duration;
 import java.util.Calendar;
-import java.util.GregorianCalendar;
-import java.util.List;
 
 public class NuevaTarea extends AppCompatActivity {
     EditText fecha, hora, asunto;
@@ -48,10 +55,18 @@ public class NuevaTarea extends AppCompatActivity {
     private long duracion = 0;
     static final long WAIT = 900000;
 
+    Button continuar;
+    TextView titulo;
+
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_nueva_tarea);
+
+        StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
+        StrictMode.setThreadPolicy(policy);
 
         latOrigen = (TextView) findViewById(R.id.idLatOrigen);
         latDestino = (TextView) findViewById(R.id.idLatDestino);
@@ -61,6 +76,12 @@ public class NuevaTarea extends AppCompatActivity {
         hora = (EditText) findViewById(R.id.idHora);
         asunto = (EditText) findViewById(R.id.idAsunto);
         transporte = (TextView) findViewById(R.id.idTransporte);
+
+        titulo = (TextView) findViewById(R.id.idTitulo);
+        continuar = (Button) findViewById(R.id.bCrearEditar);
+
+        titulo.setText(R.string.crearTarea);
+        continuar.setText(R.string.crear);
 
         Intent idInt = getIntent();
         int id = idInt.getIntExtra("id", 0);
@@ -74,6 +95,9 @@ public class NuevaTarea extends AppCompatActivity {
                 transporte.setText(cursor.getString(6));
                 String txtFecha = cursor.getString(2);
                 String [] fechaHora = txtFecha.split(",");
+
+                titulo.setText(R.string.editarTarea);
+                continuar.setText(R.string.editar);
 
 
                 fecha.setText(fechaHora[0]);
@@ -103,6 +127,16 @@ public class NuevaTarea extends AppCompatActivity {
                 latDestino.setText(ubDestino[0]);
                 lonOrigen.setText(ubOrigen[1]);
                 lonDestino.setText(ubDestino[1]);
+
+                try {
+                    duracion = parseDuracion(getDuracion(new LatLng(Double.parseDouble(ubOrigen[0]), Double.parseDouble(ubOrigen[1])),
+                                            new LatLng(Double.parseDouble(ubDestino[0]), Double.parseDouble(ubDestino[1])),
+                                            transporte.getText().toString()));
+                } catch (IOException e) {
+                    e.printStackTrace();
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
             }
 
         }
@@ -129,15 +163,18 @@ public class NuevaTarea extends AppCompatActivity {
         bBuscar.setOnClickListener((View v) -> {
             Intent intent = new Intent(v.getContext(), Ubicacion.class);
             if (id != 0){
+                intent.putExtra("id", id);
                 intent.putExtra("latOrigen", latOrigen.getText());
                 intent.putExtra("latDestino", latDestino.getText());
                 intent.putExtra("lonOrigen", lonOrigen.getText());
                 intent.putExtra("lonDestino", lonDestino.getText());
+                intent.putExtra("modoTransporte", transporte.getText());
             }
+            intent.putExtra("id", 0);
             buscarUbicacion.launch(intent);
         });
 
-        Button bCrear = (Button) findViewById(R.id.bCrear);
+        Button bCrear = (Button) findViewById(R.id.bCrearEditar);
 
         bCrear.setOnClickListener((View v) -> {
             if(!excepciones()) {
@@ -147,6 +184,126 @@ public class NuevaTarea extends AppCompatActivity {
             }
         });
     }
+
+    public long parseDuracion(String input) {
+        input = input.toLowerCase()
+                .replaceAll("days?", "DT")
+                .replaceAll("mins?", "M")
+                .replaceAll("hours?", "H")
+                .replaceAll("\\s+", "");
+
+        input = "PT" + input;
+        if(input.contains("D")) {
+            input = input.replaceFirst("T", "");
+        }
+
+
+        Duration d = Duration.parse(input);
+        return d.toMinutes();
+    }
+
+    private String getDuracion(LatLng origen, LatLng destino, String mode) throws IOException, JSONException {
+
+
+        mode = parseMode(mode);
+
+        String stringUrl = "https://maps.googleapis.com/maps/api/distancematrix/json?units=metric&origins="+
+                origen.latitude+","+origen.longitude+
+                "&destinations="+destino.latitude+","+destino.longitude+"&key=AIzaSyD6A7Zni9DVryKVro8--jjmGmy8Zq3auxc&mode="
+                + mode;
+
+        String json;
+        json = NuevaTarea.NetworkUtils.getJSONFromAPI(stringUrl);
+
+        String duration = new JSONObject(json)
+                .getJSONArray("rows")
+                .getJSONObject(0)
+                .getJSONArray("elements")
+                .getJSONObject(0)
+                .getJSONObject("duration")
+                .get("text").toString();
+
+
+
+        return duration;
+
+
+    }
+
+    private String parseMode(String mode) {
+
+        if(mode.equals("Andando")){
+            mode = "walking";
+        } else if (mode.equals("Vehiculo")){
+            mode = "driving";
+        }
+        else if(mode.equals("Bicicleta")){
+            mode = "bicycling";
+        }
+        return mode;
+
+    }
+
+
+    public static class NetworkUtils {
+
+        public static String getJSONFromAPI (String url){
+            String output = "";
+            try {
+                URL apiEnd = new URL(url);
+                int responseCode;
+                HttpURLConnection connection;
+                InputStream is;
+
+                connection = (HttpURLConnection) apiEnd.openConnection();
+                connection.setRequestMethod("GET");
+                connection.setReadTimeout(15000);
+                connection.setConnectTimeout(15000);
+                connection.connect();
+
+                responseCode = connection.getResponseCode();
+                if(responseCode < HttpURLConnection.HTTP_BAD_REQUEST){
+                    is = connection.getInputStream();
+                }else {
+                    is = connection.getErrorStream();
+                }
+
+                output = convertISToString(is);
+                is.close();
+                connection.disconnect();
+
+            }  catch (MalformedURLException e) {
+                e.printStackTrace();
+            } catch (ProtocolException e) {
+                e.printStackTrace();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
+
+            return output;
+        }
+
+        private static String convertISToString(InputStream is){
+            StringBuffer buffer = new StringBuffer();
+
+            try {
+
+                BufferedReader br;
+                String row;
+
+                br = new BufferedReader(new InputStreamReader(is));
+                while ((row = br.readLine())!= null){
+                    buffer.append(row);
+                }
+                br.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            return buffer.toString();
+        }
+    }
+
 
 
     private void crear(long duracion, int id){

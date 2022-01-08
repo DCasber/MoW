@@ -24,6 +24,7 @@
     <string name="changed_to">Notification added to %s</string>
     <string name="eliminar">Delete</string>
     <string name="editar">Edit</string>
+    <string name="editarTarea">Edit Task</string>
     <string name="limpiar">Clean</string>
     <string name="continuar">Next</string>
     <string name="latitud">Latitude:</string>

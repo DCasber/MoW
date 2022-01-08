@@ -13,12 +13,11 @@
         tools:context=".NuevaTarea">
 
         <TextView
-            android:id="@+id/textView6"
+            android:id="@+id/idTitulo"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="112dp"
             android:layout_marginTop="16dp"
-            android:text="@string/crearTarea"
             android:textSize="34sp"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
@@ -188,12 +187,11 @@
             app:layout_constraintTop_toTopOf="parent" />
 
         <Button
-            android:id="@+id/bCrear"
+            android:id="@+id/bCrearEditar"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="232dp"
             android:layout_marginTop="856dp"
-            android:text="@string/crear"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
