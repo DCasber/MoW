@@ -80,6 +80,8 @@ public class Ubicacion extends AppCompatActivity  implements GoogleMap.OnMapClic
     private Button limpiar, continuar;
     private Spinner transportes;
 
+    private int id = 0;
+
     private final static int LOCATION_REQUEST_CODE = 23;
     boolean locationPermission = false;
 
@@ -246,49 +248,31 @@ public class Ubicacion extends AppCompatActivity  implements GoogleMap.OnMapClic
         });
 
 
-        SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
-                .findFragmentById(R.id.map);
-        mapFragment.getMapAsync(this);
-
         Bundle extras = getIntent().getExtras();
-        Integer id = (Integer) extras.get("id");
+        id = (Integer) extras.get("id");
 
         if (id != 0){
-            double latOrigen = (Double) extras.get("latOrigen");
-            double latDestino = (Double) extras.get("latDestino");
-            double lonOrigen = (Double) extras.get("lonOrigen");
-            double lonDestino = (Double) extras.get("lonDestino");
+            double latOrigen = Double.parseDouble(extras.get("latOrigen").toString());
+            double latDestino = Double.parseDouble(extras.get("latDestino").toString());
+            double lonOrigen = Double.parseDouble(extras.get("lonOrigen").toString());
+            double lonDestino = Double.parseDouble(extras.get("lonDestino").toString());
 
             modoTransporte = (String) extras.get("modoTransporte");
 
             origen = new LatLng(latOrigen, lonOrigen);
             destino = new LatLng(latDestino, lonDestino);
 
+            this.eOrigen.setText(origen.latitude + "," + origen.longitude);
+            this.eDestino.setText(destino.latitude + "," + destino.longitude);
+
             mapCount = 2;
-
-            googleMap.addMarker(new MarkerOptions()
-                    .position(origen)
-                    .title("Origen"));
-
-            googleMap.addMarker(new MarkerOptions()
-                    .position(destino)
-                    .title("Destino"));
-
-            googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(destino, 10));
-
             transportes.setEnabled(true);
 
-            Findroutes(origen, destino,modoTransporte);
-
-            try {
-                duracion = getDuracion(origen, destino,modoTransporte);
-            } catch (IOException | JSONException e) {
-                e.printStackTrace();
-            }
-
-            tvDuration.setText(duracion + "");
-
         }
+
+        SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
+                .findFragmentById(R.id.map);
+        mapFragment.getMapAsync(this);
 
 
 
@@ -313,11 +297,31 @@ public class Ubicacion extends AppCompatActivity  implements GoogleMap.OnMapClic
 
     @Override
     public void onMapReady(GoogleMap googleMap) {
-        LatLng latlng = new LatLng(-33.852, 151.211);
         this.googleMap = googleMap;
-        this.googleMap.addMarker(new MarkerOptions()
-                .position(latlng)
-                .title("Position"));
+
+        if(id != 0){
+
+            this.googleMap.addMarker(new MarkerOptions()
+                    .position(origen)
+                    .title("Origen"));
+
+            this.googleMap.addMarker(new MarkerOptions()
+                    .position(destino)
+                    .title("Destino"));
+
+            googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(destino, 10));
+
+            Findroutes(origen, destino,modoTransporte);
+
+            try {
+                duracion = getDuracion(origen, destino,modoTransporte);
+            } catch (IOException | JSONException e) {
+                e.printStackTrace();
+            }
+
+            tvDuration.setText(duracion + "");
+        }
+
 
         this.googleMap.setOnMapClickListener(this);
 

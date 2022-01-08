@@ -162,6 +162,7 @@ public class NuevaTarea extends AppCompatActivity {
 
         bBuscar.setOnClickListener((View v) -> {
             Intent intent = new Intent(v.getContext(), Ubicacion.class);
+            intent.putExtra("id", 0);
             if (id != 0){
                 intent.putExtra("id", id);
                 intent.putExtra("latOrigen", latOrigen.getText());
@@ -170,7 +171,7 @@ public class NuevaTarea extends AppCompatActivity {
                 intent.putExtra("lonDestino", lonDestino.getText());
                 intent.putExtra("modoTransporte", transporte.getText());
             }
-            intent.putExtra("id", 0);
+
             buscarUbicacion.launch(intent);
         });
 
