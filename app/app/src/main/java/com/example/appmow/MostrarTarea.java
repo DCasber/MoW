@@ -47,6 +47,7 @@ public class MostrarTarea extends AppCompatActivity implements OnMapReadyCallbac
 
     private GoogleMap googleMap;
     private LatLng origen, destino;
+    private String transporte;
     private List<Polyline> polylines = null;
     private int id;
 
@@ -65,7 +66,7 @@ public class MostrarTarea extends AppCompatActivity implements OnMapReadyCallbac
         bEditar = (Button) findViewById(R.id.bEditar);
 
         String asunto = "";
-        String transporte = "";
+        transporte = "";
         String fecha = "";
         String alarma = "";
         String ubicacionOrigen = "";
@@ -157,18 +158,30 @@ public class MostrarTarea extends AppCompatActivity implements OnMapReadyCallbac
 
         googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latlngM, 7));
 
-        Findroutes(origen, destino);
+        Findroutes(origen, destino,transporte);
 
 
     }
 
-    public void Findroutes(LatLng Start, LatLng End) {
+    public void Findroutes(LatLng Start, LatLng End, String mode) {
         if (Start == null || End == null) {
             Toast.makeText(MostrarTarea.this, "Unable to get location", Toast.LENGTH_LONG).show();
         } else {
 
+            AbstractRouting.TravelMode transporte;
+
+            if (mode.equals("Andando")){
+                transporte = AbstractRouting.TravelMode.WALKING;
+
+            } else if (mode.equals("Vehiculo")){
+                transporte = AbstractRouting.TravelMode.DRIVING;
+            } else{
+                transporte = AbstractRouting.TravelMode.BIKING;
+            }
+
+
             Routing routing = new Routing.Builder()
-                    .travelMode(AbstractRouting.TravelMode.DRIVING)
+                    .travelMode(transporte)
                     .withListener(this)
                     .alternativeRoutes(true)
                     .waypoints(Start, End)
@@ -231,7 +244,7 @@ public class MostrarTarea extends AppCompatActivity implements OnMapReadyCallbac
 
     @Override
     public void onRoutingCancelled() {
-        Findroutes(origen, destino);
+        Findroutes(origen, destino, transporte);
     }
 }
 
