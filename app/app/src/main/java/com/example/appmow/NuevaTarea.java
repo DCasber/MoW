@@ -14,9 +14,11 @@ import android.app.TimePickerDialog;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
+import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
 import android.os.Bundle;
+import android.provider.Settings;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
@@ -29,6 +31,8 @@ import android.widget.Toast;
 
 import com.google.android.gms.maps.model.LatLng;
 
+import java.sql.Date;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
@@ -62,16 +66,33 @@ public class NuevaTarea extends AppCompatActivity {
         int id = idInt.getIntExtra("id", 0);
 
         if(id != 0) {
-            //Esta función sirve para cuando se accede mediante edit
-            //TODO: Obtener tarea por ID y mostrar por pantalla los valores
-            latOrigen.setText(0);
-            latDestino.setText(0);
-            lonOrigen.setText(0);
-            lonDestino.setText(0);
-            fecha.setText("00/00/0000");
-            hora.setText("00:00");
-            asunto.setText("00000");
-            //TODO: Mostrar valor spinner
+            TareaDBHelper th = new TareaDBHelper(getApplicationContext());
+            SQLiteDatabase db = th.getReadableDatabase();
+            Cursor cursor = db.rawQuery("SELECT * FROM " + TareaContract.TareaEntry.TABLE_NAME + " WHERE _ID = ?", new String[] {id + ""});
+            while(cursor.moveToNext()){
+                asunto.setText(cursor.getString(1));
+                transporte.setText(cursor.getString(6));
+                String txtFecha = cursor.getString(2);
+                String [] fechaHora = txtFecha.split(",");
+
+
+                fecha.setText(fechaHora[0]);
+                hora.setText(fechaHora[1]);
+
+
+                String ubicacionOrigen = cursor.getString(4);
+                String ubicacionDestino = cursor.getString(5);
+
+
+                String[] ubOrigen = ubicacionOrigen.split(",");
+                String[] ubDestino = ubicacionDestino.split(",");
+
+                latOrigen.setText(ubOrigen[0]);
+                latDestino.setText(ubDestino[0]);
+                lonOrigen.setText(ubOrigen[1]);
+                lonDestino.setText(ubDestino[1]);
+            }
+
         }
 
         Calendar C = Calendar.getInstance();
@@ -95,6 +116,12 @@ public class NuevaTarea extends AppCompatActivity {
 
         bBuscar.setOnClickListener((View v) -> {
             Intent intent = new Intent(v.getContext(), Ubicacion.class);
+            if (id != 0){
+                intent.putExtra("latOrigen", latOrigen.getText());
+                intent.putExtra("latDestino", latDestino.getText());
+                intent.putExtra("lonOrigen", lonOrigen.getText());
+                intent.putExtra("lonDestino", lonDestino.getText());
+            }
             buscarUbicacion.launch(intent);
         });
 
@@ -127,17 +154,13 @@ public class NuevaTarea extends AppCompatActivity {
         TareaDBHelper dbHelper = new TareaDBHelper(getApplicationContext());
         SQLiteDatabase db = dbHelper.getWritableDatabase();
 
-
         ContentValues values = new ContentValues();
-        Calendar fechaTarea = Calendar.getInstance();
-        fechaTarea.set(a, m, d, h, min, 0);
-        long timeTarea = fechaTarea.getTimeInMillis();
 
         String origen = latOrigen.getText() + "," + lonOrigen.getText();
         String destino = latDestino.getText() + "," + lonDestino.getText();
 
         values.put(TareaContract.TareaEntry.ASUNTO, asunto.getText().toString());
-        values.put(TareaContract.TareaEntry.FECHA, timeTarea + "");
+        values.put(TareaContract.TareaEntry.FECHA, d + "/" + (m + 1) + "/" + a + "," + h + ":" + min + "");
         values.put(TareaContract.TareaEntry.ALARMA, alarma + "");
         values.put(TareaContract.TareaEntry.TRANSPORTE, transporte.getText().toString());
         values.put(TareaContract.TareaEntry.ORIGEN, origen);
@@ -169,6 +192,7 @@ public class NuevaTarea extends AppCompatActivity {
                     lonDestino.setText(destino.longitude + "");
                     transporte.setText(strTransporte);
                     duracion = (long) extras.get("duracion");
+                    System.out.println("La duracion es: " + duracion);
                     duracion = duracion * 6000;
                 }
             });

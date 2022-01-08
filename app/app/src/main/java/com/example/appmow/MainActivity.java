@@ -89,12 +89,6 @@ public class MainActivity extends AppCompatActivity {
         listaTareas = new ArrayList<>();
 
         for(Tarea t : tareas){
-
-            /* long alarma = Long.parseLong(t.getAlarma());
-            Calendar cal = Calendar.getInstance();
-            cal.setTimeInMillis(alarma * 1000);
-            String date = DateFormat.format("dd-MM-yyyy HH:mm", cal).toString(); */
-
             listaTareas.add("#" + t.getID() + " - " + t.getAsunto());
 
         }
