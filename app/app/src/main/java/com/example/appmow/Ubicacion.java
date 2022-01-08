@@ -164,8 +164,6 @@ public class Ubicacion extends AppCompatActivity  implements GoogleMap.OnMapClic
 
                     modoTransporte = transportes.getSelectedItem().toString();
 
-                    googleMap.clear();
-
                     Findroutes(origen, destino,modoTransporte);
 
                     try {
@@ -300,14 +298,6 @@ public class Ubicacion extends AppCompatActivity  implements GoogleMap.OnMapClic
         this.googleMap = googleMap;
 
         if(id != 0){
-
-            this.googleMap.addMarker(new MarkerOptions()
-                    .position(origen)
-                    .title("Origen"));
-
-            this.googleMap.addMarker(new MarkerOptions()
-                    .position(destino)
-                    .title("Destino"));
 
             googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(destino, 10));
 
@@ -479,7 +469,7 @@ public class Ubicacion extends AppCompatActivity  implements GoogleMap.OnMapClic
         if (Start == null || End == null) {
             Toast.makeText(Ubicacion.this, "Unable to get location", Toast.LENGTH_LONG).show();
         } else {
-
+            googleMap.clear();
             AbstractRouting.TravelMode transporte;
 
             if (mode.equals("Andando")){
@@ -545,6 +535,16 @@ public class Ubicacion extends AppCompatActivity  implements GoogleMap.OnMapClic
                 int k = polyline.getPoints().size();
                 polylineEndLatLng = polyline.getPoints().get(k - 1);
                 polylines.add(polyline);
+
+                this.googleMap.addMarker(new MarkerOptions()
+                        .position(origen)
+                        .title("Origen"));
+
+                this.googleMap.addMarker(new MarkerOptions()
+                        .position(destino)
+                        .title("Destino"));
+
+
 
             } else {
 
