@@ -253,10 +253,18 @@ public class Ubicacion extends AppCompatActivity  implements GoogleMap.OnMapClic
 
     public long parseDuracion(String input) {
         input = input.toLowerCase()
+                .replaceAll("days?", "DT")
                 .replaceAll("mins?", "M")
                 .replaceAll("hours?", "H")
                 .replaceAll("\\s+", "");
-        Duration d = Duration.parse("PT" + input);
+
+        input = "PT" + input;
+        if(input.contains("D")) {
+            input = input.replaceFirst("T", "");
+        }
+
+
+        Duration d = Duration.parse(input);
         return d.toMinutes();
     }
 

@@ -73,17 +73,16 @@
         android:layout_height="238dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="1.0"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.519"
+        app:layout_constraintVertical_bias="0.533"
         tools:context="com.example.mapwithmarker.MapsMarkerActivity" />
 
     <Button
         android:id="@+id/limpiar"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:text="Limpiar"
+        android:text="@string/limpiar"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="@+id/continuar"
         app:layout_constraintHorizontal_bias="0.0"
@@ -95,13 +94,13 @@
         android:id="@+id/continuar"
         android:layout_width="124dp"
         android:layout_height="wrap_content"
-        android:text="Continuar"
+        android:text="@string/continuar"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.901" />
+        app:layout_constraintVertical_bias="0.894" />
 
     <TextView
         android:id="@+id/tvDistDurat"

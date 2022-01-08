@@ -13,68 +13,13 @@
         tools:context=".NuevaTarea">
 
         <TextView
-            android:id="@+id/textView13"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="44dp"
-            android:layout_marginTop="544dp"
-            android:text="Destino"
-            android:textSize="16sp"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
-
-        <TextView
-            android:id="@+id/textView14"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="120dp"
-            android:layout_marginTop="588dp"
-            android:text="Latitud:"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
-
-        <TextView
-            android:id="@+id/textView15"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="108dp"
-            android:layout_marginTop="660dp"
-            android:text="Longitud:"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
-
-        <EditText
-            android:id="@+id/idLonDestino"
-            android:layout_width="142dp"
-            android:layout_height="38dp"
-            android:layout_marginStart="196dp"
-            android:layout_marginTop="652dp"
-            android:editable="false"
-            android:ems="10"
-            android:inputType="numberDecimal"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
-
-        <EditText
-            android:id="@+id/idLatDestino"
-            android:layout_width="145dp"
-            android:layout_height="42dp"
-            android:layout_marginStart="196dp"
-            android:layout_marginTop="576dp"
-            android:editable="false"
-            android:ems="10"
-            android:inputType="numberDecimal"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
-
-        <TextView
             android:id="@+id/textView6"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginStart="164dp"
-            android:layout_marginTop="32dp"
-            android:text="Nueva Tarea"
-            android:textSize="24sp"
+            android:layout_marginStart="112dp"
+            android:layout_marginTop="16dp"
+            android:text="@string/crearTarea"
+            android:textSize="34sp"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
@@ -95,7 +40,7 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="44dp"
             android:layout_marginTop="92dp"
-            android:text="Asunto:"
+            android:text="@string/asunto"
             android:textSize="16sp"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
@@ -117,7 +62,7 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="44dp"
             android:layout_marginTop="172dp"
-            android:text="Fecha:"
+            android:text="@string/labelFecha"
             android:textSize="16sp"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
@@ -139,29 +84,63 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="44dp"
             android:layout_marginTop="256dp"
-            android:text="Hora:"
+            android:text="@string/hora"
             android:textSize="16sp"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
         <TextView
-            android:id="@+id/textView8"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="44dp"
-            android:layout_marginTop="344dp"
-            android:text="Origen"
-            android:textSize="16sp"
+            android:id="@+id/idLatOrigen"
+            android:layout_width="145dp"
+            android:layout_height="42dp"
+            android:layout_marginStart="180dp"
+            android:layout_marginTop="476dp"
+            android:editable="false"
+            android:ems="10"
+            android:inputType="numberDecimal"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
-        <Button
-            android:id="@+id/bBuscar"
+        <TextView
+            android:id="@+id/textView10"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginStart="244dp"
-            android:layout_marginTop="728dp"
-            android:text="Buscar"
+            android:layout_marginStart="92dp"
+            android:layout_marginTop="548dp"
+            android:text="@string/longitud"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <TextView
+            android:id="@+id/textView14"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="104dp"
+            android:layout_marginTop="676dp"
+            android:text="@string/latitud"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <TextView
+            android:id="@+id/idTransporte"
+            android:layout_width="137dp"
+            android:layout_height="28dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.748"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintVertical_bias="0.928" />
+
+        <TextView
+            android:id="@+id/idLonOrigen"
+            android:layout_width="142dp"
+            android:layout_height="38dp"
+            android:layout_marginStart="180dp"
+            android:layout_marginTop="548dp"
+            android:editable="false"
+            android:ems="10"
+            android:inputType="numberDecimal"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
@@ -169,29 +148,29 @@
             android:id="@+id/textView7"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginStart="44dp"
-            android:layout_marginTop="808dp"
-            android:text="Medio de Transporte:"
+            android:layout_marginStart="28dp"
+            android:layout_marginTop="812dp"
+            android:text="@string/labelDesplazamiento"
             android:textSize="16sp"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
-        <Button
-            android:id="@+id/bCrear"
+        <TextView
+            android:id="@+id/textView15"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginStart="252dp"
-            android:layout_marginTop="904dp"
-            android:text="Crear"
+            android:layout_marginStart="92dp"
+            android:layout_marginTop="748dp"
+            android:text="@string/longitud"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
-        <EditText
-            android:id="@+id/idLatOrigen"
-            android:layout_width="145dp"
-            android:layout_height="42dp"
-            android:layout_marginStart="196dp"
-            android:layout_marginTop="376dp"
+        <TextView
+            android:id="@+id/idLonDestino"
+            android:layout_width="142dp"
+            android:layout_height="38dp"
+            android:layout_marginStart="176dp"
+            android:layout_marginTop="744dp"
             android:editable="false"
             android:ems="10"
             android:inputType="numberDecimal"
@@ -202,28 +181,39 @@
             android:id="@+id/textView3"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginStart="120dp"
-            android:layout_marginTop="388dp"
-            android:text="Latitud:"
+            android:layout_marginStart="104dp"
+            android:layout_marginTop="476dp"
+            android:text="@string/longitud"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <Button
+            android:id="@+id/bCrear"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="232dp"
+            android:layout_marginTop="856dp"
+            android:text="@string/crear"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
         <TextView
-            android:id="@+id/textView10"
+            android:id="@+id/textView13"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginStart="108dp"
-            android:layout_marginTop="460dp"
-            android:text="Longitud:"
+            android:layout_marginStart="28dp"
+            android:layout_marginTop="628dp"
+            android:text="@string/destino"
+            android:textSize="16sp"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
-        <EditText
-            android:id="@+id/idLonOrigen"
-            android:layout_width="142dp"
-            android:layout_height="38dp"
-            android:layout_marginStart="196dp"
-            android:layout_marginTop="452dp"
+        <TextView
+            android:id="@+id/idLatDestino"
+            android:layout_width="145dp"
+            android:layout_height="42dp"
+            android:layout_marginStart="180dp"
+            android:layout_marginTop="676dp"
             android:editable="false"
             android:ems="10"
             android:inputType="numberDecimal"
@@ -231,15 +221,37 @@
             app:layout_constraintTop_toTopOf="parent" />
 
         <TextView
-            android:id="@+id/idTransporte"
-            android:layout_width="137dp"
-            android:layout_height="28dp"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.16"
+            android:id="@+id/textView8"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="36dp"
+            android:layout_marginTop="408dp"
+            android:text="@string/origen"
+            android:textSize="16sp"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintVertical_bias="0.908" />
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <Button
+            android:id="@+id/bBuscar"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="232dp"
+            android:layout_marginTop="336dp"
+            android:text="@string/buscar"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <TextView
+            android:id="@+id/textView11"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="52dp"
+            android:text="@string/ubicación"
+            android:textSize="22sp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.313"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/idHora" />
 
 
     </androidx.constraintlayout.widget.ConstraintLayout>

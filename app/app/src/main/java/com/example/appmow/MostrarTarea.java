@@ -3,12 +3,14 @@ package com.example.appmow;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.util.Pair;
 import android.view.View;
+import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -36,20 +38,26 @@ import java.util.List;
 
 public class MostrarTarea extends AppCompatActivity implements OnMapReadyCallback, RoutingListener {
 
-    final TextView tAsunto = (TextView) findViewById(R.id.nombreTarea);
-    final TextView tFecha = (TextView) findViewById(R.id.fechaTarea);
-    final TextView tAlarma = (TextView) findViewById(R.id.alarmaTarea);
-    final TextView tTransporte = (TextView) findViewById(R.id.transporteTarea);
+    TextView tAsunto, tFecha, tAlarma, tTransporte;
+    Button bEliminar;
 
     private GoogleMap googleMap;
     private LatLng origen, destino;
     private List<Polyline> polylines = null;
+    private int id;
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_mostrar_tarea);
+
+        tAsunto = (TextView) findViewById(R.id.nombreTarea);
+        tFecha = (TextView) findViewById(R.id.fechaTarea);
+        tAlarma = (TextView) findViewById(R.id.alarmaTarea);
+        tTransporte = (TextView) findViewById(R.id.transporteTarea);
+
+        bEliminar = (Button) findViewById(R.id.bEliminar);
 
         String asunto = "";
         String transporte = "";
@@ -59,60 +67,62 @@ public class MostrarTarea extends AppCompatActivity implements OnMapReadyCallbac
         String ubicacionDestino = "";
 
         Bundle extras = getIntent().getExtras();
-        String tarea = (String) extras.get("tarea");
+        String strTarea = (String) extras.get("tarea");
 
-        Integer id = Integer.parseInt(tarea.split("|")[0].substring(1).trim());
-        /*
-        TareaHelper th = new TareaHelper(getApplicationContext(), "database_name.db");
+        id = Integer.parseInt(strTarea.split("-")[0].substring(1).trim());
+
+        TareaDBHelper th = new TareaDBHelper(getApplicationContext());
         SQLiteDatabase db = th.getReadableDatabase();
 
-        String[] datos = {
-                Tarea.DictEntry._ID,
-                Tarea.DictEntry.COLUMN_NAME_VAL_ASUNTO,
-                Tarea.DictEntry.COLUMN_NAME_VAL_ALARMA,
-                Tarea.DictEntry.COLUMN_NAME_VAL_UB_DESTINO,
-                Tarea.DictEntry.COLUMN_NAME_VAL_UB_ORIGEN,
-                Tarea.DictEntry.COLUMN_NAME_VAL_TRANSPORTE,
-                Tarea.DictEntry.COLUMN_NAME_VAL_FECHA,
-        };
+        bEliminar.setOnClickListener(v -> {
+            String where = TareaContract.TareaEntry._ID + " = ?";
+            String[] whereArg = {String.valueOf(id)};
+            db.delete(TareaContract.TareaEntry.TABLE_NAME, where, whereArg);
 
-        Cursor cursor = db.query(Tarea.DictEntry.TABLE_NAME, datos, "_ID = " + id, null, null, null, null);
-        try {
+            Intent intent = new Intent(v.getContext(), MainActivity.class);
+            startActivity(intent);
+        });
 
-                asunto = cursor.getString(cursor.getColumnIndexOrThrow(Tarea.DictEntry.COLUMN_NAME_VAL_ASUNTO));
-                alarma = cursor.getString(cursor.getColumnIndexOrThrow(Tarea.DictEntry.COLUMN_NAME_VAL_ALARMA));
-                ubicacionDestino = cursor.getString(cursor.getColumnIndexOrThrow(Tarea.DictEntry.COLUMN_NAME_VAL_UB_DESTINO));
-                ubicacionOrigen = cursor.getString(cursor.getColumnIndexOrThrow(Tarea.DictEntry.COLUMN_NAME_VAL_UB_ORIGEN));
-                transporte = cursor.getString(cursor.getColumnIndexOrThrow(Tarea.DictEntry.COLUMN_NAME_VAL_TRANSPORTE));
-                fecha = cursor.getString(cursor.getColumnIndexOrThrow(Tarea.DictEntry.COLUMN_NAME_VAL_FECHA));
+        Cursor cursor = db.rawQuery("SELECT * FROM " + TareaContract.TareaEntry.TABLE_NAME + " WHERE _ID = ?", new String[] {id + ""});
+        while (cursor.moveToNext()) {
 
-        } finally {
-            cursor.close();
+            asunto = cursor.getString(1);
+            fecha = cursor.getString(2);
+            alarma = cursor.getString(3);
+            ubicacionOrigen = cursor.getString(4);
+            ubicacionDestino = cursor.getString(5);
+            transporte = cursor.getString(6);
+
+
+            tAsunto.setText(asunto);
+            tAlarma.setText(alarma);
+            tTransporte.setText(transporte);
+            tFecha.setText(fecha);
+
+
+            double latOrigen, latDestino, longOrigen, longDestino;
+
+            String[] ubOrigen = ubicacionOrigen.split(",");
+            String[] ubDestino = ubicacionDestino.split(",");
+
+            latOrigen = Double.parseDouble(ubOrigen[0]);
+            latDestino = Double.parseDouble(ubDestino[0]);
+            longOrigen = Double.parseDouble(ubOrigen[1]);
+            longDestino = Double.parseDouble(ubDestino[1]);
+
+            origen = new LatLng(latOrigen, longOrigen);
+            destino = new LatLng(latDestino, longDestino);
+
+            SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
+                    .findFragmentById(R.id.map);
+            mapFragment.getMapAsync(this);
+
+
+
+
+
+
         }
-
-        tAsunto.setText(asunto);
-        tAlarma.setText(alarma);
-        tTransporte.setText(transporte);
-        tFecha.setText(fecha);
-
-        double latOrigen, latDestino, longOrigen, longDestino;
-
-        String [] ubOrigen = ubicacionOrigen.split(",");
-        String [] ubDestino = ubicacionDestino.split(",");
-
-        latOrigen = Double.parseDouble(ubOrigen[0]);
-        latDestino = Double.parseDouble(ubDestino[0]);
-        longOrigen = Double.parseDouble(ubOrigen[1]);
-        longDestino = Double.parseDouble(ubDestino[1]);
-
-        SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
-                .findFragmentById(R.id.map);
-        mapFragment.getMapAsync(this);
-
-        origen = new LatLng(latOrigen, longOrigen);
-        destino = new LatLng(latDestino, longDestino);
-
-        */
 
 
     }
@@ -129,6 +139,13 @@ public class MostrarTarea extends AppCompatActivity implements OnMapReadyCallbac
         this.googleMap.addMarker(new MarkerOptions()
                 .position(destino)
                 .title("Destino"));
+
+        double latmedia = (origen.latitude + destino.latitude) / 2;
+        double lonmedia = (origen.longitude + destino.longitude) / 2;
+
+        LatLng latlngM = new LatLng(latmedia, lonmedia);
+
+        googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latlngM, 7));
 
         Findroutes(origen, destino);
 

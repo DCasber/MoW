@@ -39,16 +39,17 @@ public class MainActivity extends AppCompatActivity {
 
         arrayAdapter = new ArrayAdapter(this, android.R.layout.simple_list_item_1, listaTareas);
         lista.setAdapter(arrayAdapter);
-        /*
+        lista.refreshDrawableState();
+
 
         lista.setOnItemClickListener((AdapterView.OnItemClickListener) (parent, view, position, id) -> {
             String itemChosen = (String) parent.getItemAtPosition(position);
-            Intent intent = new Intent(MainActivity.this, MostrarTarea.class);
+            Intent intent = new Intent(view.getContext(), MostrarTarea.class);
             intent.putExtra("tarea", itemChosen);
             startActivity(intent);
         });
 
-         */
+
 
         Button crear = (Button) findViewById(R.id.button);
 
@@ -70,6 +71,7 @@ public class MainActivity extends AppCompatActivity {
         Cursor cursor = db.rawQuery("SELECT * FROM " + TareaContract.TareaEntry.TABLE_NAME, null);
         while (cursor.moveToNext()) {
             System.out.println("Entro");
+            String id = cursor.getString(0);
             String asunto = cursor.getString(1);
             String fecha = cursor.getString(2);
             String alarma = cursor.getString(3);
@@ -77,7 +79,7 @@ public class MainActivity extends AppCompatActivity {
             String destino = cursor.getString(5);
             String transporte = cursor.getString(6);
 
-            tarea = new Tarea(asunto, fecha, alarma, origen, destino, transporte);
+            tarea = new Tarea(id, asunto, fecha, alarma, origen, destino, transporte);
             tareas.add(tarea);
         }
         obtenerLista();
@@ -93,7 +95,7 @@ public class MainActivity extends AppCompatActivity {
             cal.setTimeInMillis(alarma * 1000);
             String date = DateFormat.format("dd-MM-yyyy HH:mm", cal).toString(); */
 
-            listaTareas.add(t.getAsunto());
+            listaTareas.add("#" + t.getID() + " - " + t.getAsunto());
 
         }
     }
