@@ -79,6 +79,18 @@ public class NuevaTarea extends AppCompatActivity {
                 fecha.setText(fechaHora[0]);
                 hora.setText(fechaHora[1]);
 
+                String [] valFecha = fechaHora[0].split("/");
+                String [] valHora = fechaHora[1].split(":");
+
+                a = Integer.parseInt(valFecha[2]);
+                m = Integer.parseInt(valFecha[1]);
+                d = Integer.parseInt(valFecha[0]);
+
+                h = Integer.parseInt(valHora[0]);
+                min = Integer.parseInt(valHora[1]);
+
+                System.out.println("El dia es: " + d + "/" + m + "/" + a + " a las " + h + ":" + min);
+
 
                 String ubicacionOrigen = cursor.getString(4);
                 String ubicacionDestino = cursor.getString(5);
@@ -142,14 +154,22 @@ public class NuevaTarea extends AppCompatActivity {
         fechaTarea.set(a, m, d, h, min, 0);
         long timeTarea = fechaTarea.getTimeInMillis();
         timeTarea = timeTarea - duracion -  WAIT;
-        Toast.makeText(getApplicationContext(), getString(R.string.changed_to, h + ":" + m), Toast.LENGTH_LONG).show();
+
+
+        SimpleDateFormat formatter = new SimpleDateFormat("dd/MM/yyyy,HH:mm");
+
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTimeInMillis(timeTarea);
+        String alarma = formatter.format(calendar.getTime());
+
+        Toast.makeText(getApplicationContext(), getString(R.string.changed_to, alarma), Toast.LENGTH_LONG).show();
         setAlarm(1, timeTarea, NuevaTarea.this);
 
-        insertarBD(timeTarea, id);
+        insertarBD(alarma, id);
 
     }
 
-    private void insertarBD(long alarma, int id){
+    private void insertarBD(String alarma, int id){
 
         TareaDBHelper dbHelper = new TareaDBHelper(getApplicationContext());
         SQLiteDatabase db = dbHelper.getWritableDatabase();
@@ -160,7 +180,7 @@ public class NuevaTarea extends AppCompatActivity {
         String destino = latDestino.getText() + "," + lonDestino.getText();
 
         values.put(TareaContract.TareaEntry.ASUNTO, asunto.getText().toString());
-        values.put(TareaContract.TareaEntry.FECHA, d + "/" + (m + 1) + "/" + a + "," + h + ":" + min + "");
+        values.put(TareaContract.TareaEntry.FECHA, fecha.getText() + "," + hora.getText());
         values.put(TareaContract.TareaEntry.ALARMA, alarma + "");
         values.put(TareaContract.TareaEntry.TRANSPORTE, transporte.getText().toString());
         values.put(TareaContract.TareaEntry.ORIGEN, origen);
@@ -193,7 +213,7 @@ public class NuevaTarea extends AppCompatActivity {
                     transporte.setText(strTransporte);
                     duracion = (long) extras.get("duracion");
                     System.out.println("La duracion es: " + duracion);
-                    duracion = duracion * 6000;
+                    duracion = duracion * 60000;
                 }
             });
 
@@ -201,7 +221,16 @@ public class NuevaTarea extends AppCompatActivity {
 
 
     private void colocar_hora() {
-        hora.setText( h + ":" + min + " ");
+        if(h < 10 && min < 10) {
+            hora.setText( "0" + h + ":0" + min);
+        } else if(h < 10 && min >= 10){
+            hora.setText( "0" + h + ":" + min);
+        } else if(min < 10 && h >= 10){
+            hora.setText( h + ":0" + min);
+        } else {
+            hora.setText( h + ":" + min);
+        }
+
     }
 
     private TimePickerDialog.OnTimeSetListener onTimeSetListener =
@@ -214,7 +243,16 @@ public class NuevaTarea extends AppCompatActivity {
             };
 
     private void colocar_fecha() {
-        fecha.setText( d + "/" + (m + 1) + "/" + a + " ");
+        if(m < 9 && d < 10) {
+            fecha.setText( "0" + d + "/0" + (m + 1) + "/" + a);
+        } else if(m < 9 && d >= 10){
+            fecha.setText( d + "/0" + (m + 1) + "/" + a);
+        } else if(d < 10 && m >= 9){
+            fecha.setText( "0" + d + "/" + (m + 1) + "/" + a);
+        } else {
+            fecha.setText( d + "/" + (m + 1) + "/" + a);
+        }
+
     }
 
     private DatePickerDialog.OnDateSetListener nDateSetListener =

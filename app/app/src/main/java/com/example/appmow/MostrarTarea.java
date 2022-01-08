@@ -104,16 +104,10 @@ public class MostrarTarea extends AppCompatActivity implements OnMapReadyCallbac
             ubicacionDestino = cursor.getString(5);
             transporte = cursor.getString(6);
             String [] fechaHora = fecha.split(",");
-
-            Long fechaAlarma = Long.parseLong(alarma);
-
-            Date timeAlarma = new Date(fechaAlarma * 1000);
-
-            SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy HH:mm");
-            String txtAlarma = sdf.format(timeAlarma);
+            String [] alarmaHora = alarma.split(",");
 
             tAsunto.setText(asunto);
-            tAlarma.setText(txtAlarma);
+            tAlarma.setText("Día : " + alarmaHora[0] + " a las " + alarmaHora[1]);
             tTransporte.setText(transporte);
             tFecha.setText("Día : " + fechaHora[0] + " a las " + fechaHora[1]);
 
