@@ -63,7 +63,6 @@ public class MostrarTarea extends AppCompatActivity implements OnMapReadyCallbac
         tTransporte = (TextView) findViewById(R.id.transporteTarea);
 
         bEliminar = (Button) findViewById(R.id.bEliminar);
-        bEditar = (Button) findViewById(R.id.bEditar);
 
         String asunto = "";
         transporte = "";
@@ -92,11 +91,6 @@ public class MostrarTarea extends AppCompatActivity implements OnMapReadyCallbac
         });
 
 
-        bEditar.setOnClickListener(v -> {
-            Intent intent = new Intent(v.getContext(), NuevaTarea.class);
-            intent.putExtra("id", id);
-            startActivity(intent);
-        });
 
         Cursor cursor = db.rawQuery("SELECT * FROM " + TareaContract.TareaEntry.TABLE_NAME + " WHERE _ID = ?", new String[] {id + ""});
         while (cursor.moveToNext()) {
