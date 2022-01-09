@@ -263,6 +263,7 @@ public class Ubicacion extends AppCompatActivity  implements GoogleMap.OnMapClic
             this.eOrigen.setText(origen.latitude + "," + origen.longitude);
             this.eDestino.setText(destino.latitude + "," + destino.longitude);
 
+
             mapCount = 2;
             transportes.setEnabled(true);
 
@@ -505,7 +506,7 @@ public class Ubicacion extends AppCompatActivity  implements GoogleMap.OnMapClic
 
     @Override
     public void onRoutingStart() {
-        Toast.makeText(Ubicacion.this, "Finding Route...", Toast.LENGTH_LONG).show();
+        Toast.makeText(Ubicacion.this, R.string.buscandoRuta, Toast.LENGTH_LONG).show();
     }
 
     //If Route finding success..
