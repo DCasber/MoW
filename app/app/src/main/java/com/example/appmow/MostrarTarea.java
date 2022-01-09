@@ -111,9 +111,9 @@ public class MostrarTarea extends AppCompatActivity implements OnMapReadyCallbac
             String [] alarmaHora = alarma.split(",");
 
             tAsunto.setText(asunto);
-            tAlarma.setText("Día : " + alarmaHora[0] + " a las " + alarmaHora[1]);
+            tAlarma.setText(getResources().getString(R.string.dia) + " " + alarmaHora[0] + " " + getResources().getString(R.string.aLas) + " " + alarmaHora[1]);
             tTransporte.setText(transporte);
-            tFecha.setText("Día : " + fechaHora[0] + " a las " + fechaHora[1]);
+            tFecha.setText(getResources().getString(R.string.dia) + " " + fechaHora[0] + " " + getResources().getString(R.string.aLas) + " " + fechaHora[1]);
 
 
             double latOrigen, latDestino, longOrigen, longDestino;
@@ -203,7 +203,7 @@ public class MostrarTarea extends AppCompatActivity implements OnMapReadyCallbac
 
     @Override
     public void onRoutingStart() {
-        Toast.makeText(MostrarTarea.this, "Finding Route...", Toast.LENGTH_LONG).show();
+        Toast.makeText(MostrarTarea.this, getResources().getString(R.string.buscandoRuta), Toast.LENGTH_LONG).show();
     }
 
     //If Route finding success..

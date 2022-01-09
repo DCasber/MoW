@@ -33,4 +33,7 @@
     <string name="buscar">Buscar</string>
     <string name="ubicación">Ubicación</string>
     <string name="duracion">Duración</string>
+    <string name="aLas">a las</string>
+    <string name="buscandoRuta">Buscando ruta...</string>
+    <string name="dia">Día:</string>
 </resources>
