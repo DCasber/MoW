@@ -70,7 +70,6 @@ public class MainActivity extends AppCompatActivity {
         tareas = new ArrayList<>();
         Cursor cursor = db.rawQuery("SELECT * FROM " + TareaContract.TareaEntry.TABLE_NAME, null);
         while (cursor.moveToNext()) {
-            System.out.println("Entro");
             String id = cursor.getString(0);
             String asunto = cursor.getString(1);
             String fecha = cursor.getString(2);
@@ -89,7 +88,8 @@ public class MainActivity extends AppCompatActivity {
         listaTareas = new ArrayList<>();
 
         for(Tarea t : tareas){
-            listaTareas.add("#" + t.getID() + " - " + t.getAsunto());
+            String [] splitAlarma = t.getAlarma().split(",", 0);
+            listaTareas.add("#" + t.getID() + " - " + t.getAsunto() + " | " + splitAlarma[0] + " " + getResources().getString(R.string.aLas) + " " + splitAlarma[1]);
 
         }
     }

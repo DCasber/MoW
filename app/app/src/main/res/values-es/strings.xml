@@ -24,6 +24,7 @@
     <string name="changed_to">Notificación añadida a las %s</string>
     <string name="eliminar">Eliminar</string>
     <string name="editar">Editar</string>
+    <string name="editarTarea">Editar Tarea</string>
     <string name="limpiar">Limpiar</string>
     <string name="continuar">Continuar</string>
     <string name="latitud">Latitud:</string>
@@ -31,4 +32,8 @@
     <string name="crear">Crear</string>
     <string name="buscar">Buscar</string>
     <string name="ubicación">Ubicación</string>
+    <string name="duracion">Duración</string>
+    <string name="aLas">a las</string>
+    <string name="buscandoRuta">Buscando ruta...</string>
+    <string name="dia">Día:</string>
 </resources>

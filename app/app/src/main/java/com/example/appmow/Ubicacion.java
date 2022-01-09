@@ -80,6 +80,8 @@ public class Ubicacion extends AppCompatActivity  implements GoogleMap.OnMapClic
     private Button limpiar, continuar;
     private Spinner transportes;
 
+    private int id = 0;
+
     private final static int LOCATION_REQUEST_CODE = 23;
     boolean locationPermission = false;
 
@@ -100,6 +102,7 @@ public class Ubicacion extends AppCompatActivity  implements GoogleMap.OnMapClic
         eOrigen = (TextView) findViewById(R.id.eOrigen);
         eDestino = (TextView) findViewById(R.id.eDestino);
         tvDuration = (TextView) findViewById(R.id.tvDistDurat);
+
 
         eOrigen.setText("");
         eDestino.setText("");
@@ -160,8 +163,6 @@ public class Ubicacion extends AppCompatActivity  implements GoogleMap.OnMapClic
                     transportes.setEnabled(true);
 
                     modoTransporte = transportes.getSelectedItem().toString();
-
-                    googleMap.clear();
 
                     Findroutes(origen, destino,modoTransporte);
 
@@ -249,6 +250,8 @@ public class Ubicacion extends AppCompatActivity  implements GoogleMap.OnMapClic
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
 
+
+
     }
 
     public long parseDuracion(String input) {
@@ -270,11 +273,7 @@ public class Ubicacion extends AppCompatActivity  implements GoogleMap.OnMapClic
 
     @Override
     public void onMapReady(GoogleMap googleMap) {
-        LatLng latlng = new LatLng(-33.852, 151.211);
         this.googleMap = googleMap;
-        this.googleMap.addMarker(new MarkerOptions()
-                .position(latlng)
-                .title("Position"));
 
         this.googleMap.setOnMapClickListener(this);
 
@@ -432,7 +431,7 @@ public class Ubicacion extends AppCompatActivity  implements GoogleMap.OnMapClic
         if (Start == null || End == null) {
             Toast.makeText(Ubicacion.this, "Unable to get location", Toast.LENGTH_LONG).show();
         } else {
-
+            googleMap.clear();
             AbstractRouting.TravelMode transporte;
 
             if (mode.equals("Andando")){
@@ -468,7 +467,7 @@ public class Ubicacion extends AppCompatActivity  implements GoogleMap.OnMapClic
 
     @Override
     public void onRoutingStart() {
-        Toast.makeText(Ubicacion.this, "Finding Route...", Toast.LENGTH_LONG).show();
+        Toast.makeText(Ubicacion.this, R.string.buscandoRuta, Toast.LENGTH_LONG).show();
     }
 
     //If Route finding success..
@@ -498,6 +497,16 @@ public class Ubicacion extends AppCompatActivity  implements GoogleMap.OnMapClic
                 int k = polyline.getPoints().size();
                 polylineEndLatLng = polyline.getPoints().get(k - 1);
                 polylines.add(polyline);
+
+                this.googleMap.addMarker(new MarkerOptions()
+                        .position(origen)
+                        .title("Origen"));
+
+                this.googleMap.addMarker(new MarkerOptions()
+                        .position(destino)
+                        .title("Destino"));
+
+
 
             } else {
 

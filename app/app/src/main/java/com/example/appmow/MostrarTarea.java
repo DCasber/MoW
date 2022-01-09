@@ -47,6 +47,7 @@ public class MostrarTarea extends AppCompatActivity implements OnMapReadyCallbac
 
     private GoogleMap googleMap;
     private LatLng origen, destino;
+    private String transporte;
     private List<Polyline> polylines = null;
     private int id;
 
@@ -62,14 +63,15 @@ public class MostrarTarea extends AppCompatActivity implements OnMapReadyCallbac
         tTransporte = (TextView) findViewById(R.id.transporteTarea);
 
         bEliminar = (Button) findViewById(R.id.bEliminar);
-        bEditar = (Button) findViewById(R.id.bEditar);
 
         String asunto = "";
-        String transporte = "";
+        transporte = "";
         String fecha = "";
         String alarma = "";
         String ubicacionOrigen = "";
         String ubicacionDestino = "";
+
+
 
         Bundle extras = getIntent().getExtras();
         String strTarea = (String) extras.get("tarea");
@@ -88,11 +90,7 @@ public class MostrarTarea extends AppCompatActivity implements OnMapReadyCallbac
             startActivity(intent);
         });
 
-        bEditar.setOnClickListener(v -> {
-            Intent intent = new Intent(v.getContext(), NuevaTarea.class);
-            intent.putExtra("id", id);
-            startActivity(intent);
-        });
+
 
         Cursor cursor = db.rawQuery("SELECT * FROM " + TareaContract.TareaEntry.TABLE_NAME + " WHERE _ID = ?", new String[] {id + ""});
         while (cursor.moveToNext()) {
@@ -107,9 +105,9 @@ public class MostrarTarea extends AppCompatActivity implements OnMapReadyCallbac
             String [] alarmaHora = alarma.split(",");
 
             tAsunto.setText(asunto);
-            tAlarma.setText("Día : " + alarmaHora[0] + " a las " + alarmaHora[1]);
+            tAlarma.setText(getResources().getString(R.string.dia) + " " + alarmaHora[0] + " " + getResources().getString(R.string.aLas) + " " + alarmaHora[1]);
             tTransporte.setText(transporte);
-            tFecha.setText("Día : " + fechaHora[0] + " a las " + fechaHora[1]);
+            tFecha.setText(getResources().getString(R.string.dia) + " " + fechaHora[0] + " " + getResources().getString(R.string.aLas) + " " + fechaHora[1]);
 
 
             double latOrigen, latDestino, longOrigen, longDestino;
@@ -154,18 +152,30 @@ public class MostrarTarea extends AppCompatActivity implements OnMapReadyCallbac
 
         googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latlngM, 7));
 
-        Findroutes(origen, destino);
+        Findroutes(origen, destino,transporte);
 
 
     }
 
-    public void Findroutes(LatLng Start, LatLng End) {
+    public void Findroutes(LatLng Start, LatLng End, String mode) {
         if (Start == null || End == null) {
             Toast.makeText(MostrarTarea.this, "Unable to get location", Toast.LENGTH_LONG).show();
         } else {
 
+            AbstractRouting.TravelMode transporte;
+
+            if (mode.equals("Andando")){
+                transporte = AbstractRouting.TravelMode.WALKING;
+
+            } else if (mode.equals("Vehiculo")){
+                transporte = AbstractRouting.TravelMode.DRIVING;
+            } else{
+                transporte = AbstractRouting.TravelMode.BIKING;
+            }
+
+
             Routing routing = new Routing.Builder()
-                    .travelMode(AbstractRouting.TravelMode.DRIVING)
+                    .travelMode(transporte)
                     .withListener(this)
                     .alternativeRoutes(true)
                     .waypoints(Start, End)
@@ -187,7 +197,7 @@ public class MostrarTarea extends AppCompatActivity implements OnMapReadyCallbac
 
     @Override
     public void onRoutingStart() {
-        Toast.makeText(MostrarTarea.this, "Finding Route...", Toast.LENGTH_LONG).show();
+        Toast.makeText(MostrarTarea.this, getResources().getString(R.string.buscandoRuta), Toast.LENGTH_LONG).show();
     }
 
     //If Route finding success..
@@ -228,7 +238,7 @@ public class MostrarTarea extends AppCompatActivity implements OnMapReadyCallbac
 
     @Override
     public void onRoutingCancelled() {
-        Findroutes(origen, destino);
+        Findroutes(origen, destino, transporte);
     }
 }
 

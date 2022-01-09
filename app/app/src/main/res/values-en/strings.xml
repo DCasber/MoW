@@ -24,6 +24,7 @@
     <string name="changed_to">Notification added to %s</string>
     <string name="eliminar">Delete</string>
     <string name="editar">Edit</string>
+    <string name="editarTarea">Edit Task</string>
     <string name="limpiar">Clean</string>
     <string name="continuar">Next</string>
     <string name="latitud">Latitude:</string>
@@ -31,4 +32,8 @@
     <string name="crear">Create</string>
     <string name="buscar">Search</string>
     <string name="ubicación">Ubication</string>
+    <string name="duracion">Duration</string>
+    <string name="aLas">at</string>
+    <string name="buscandoRuta">Finding route...</string>
+    <string name="dia">Date:</string>
 </resources>
