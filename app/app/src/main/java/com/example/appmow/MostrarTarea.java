@@ -39,6 +39,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
+import java.util.Locale;
 
 public class MostrarTarea extends AppCompatActivity implements OnMapReadyCallback, RoutingListener {
 
@@ -86,6 +87,8 @@ public class MostrarTarea extends AppCompatActivity implements OnMapReadyCallbac
             String[] whereArg = {String.valueOf(id)};
             db.delete(TareaContract.TareaEntry.TABLE_NAME, where, whereArg);
 
+            Toast.makeText(getApplicationContext(), R.string.tareaEliminada, Toast.LENGTH_LONG).show();
+
             Intent intent = new Intent(v.getContext(), MainActivity.class);
             startActivity(intent);
         });
@@ -103,6 +106,16 @@ public class MostrarTarea extends AppCompatActivity implements OnMapReadyCallbac
             transporte = cursor.getString(6);
             String [] fechaHora = fecha.split(",");
             String [] alarmaHora = alarma.split(",");
+
+            if(!Locale.getDefault().getLanguage().equals("es")){
+                if(transporte.equals("Andando")){
+                    transporte = "Walking";
+                } else if(transporte.equals("Vehiculo")){
+                    transporte = "Vehicle";
+                }else if(transporte.equals("Bicicleta")){
+                    transporte = "Bicycle";
+                }
+            }
 
             tAsunto.setText(asunto);
             tAlarma.setText(getResources().getString(R.string.dia) + " " + alarmaHora[0] + " " + getResources().getString(R.string.aLas) + " " + alarmaHora[1]);

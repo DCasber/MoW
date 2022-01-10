@@ -35,4 +35,22 @@
     <string name="aLas">a las</string>
     <string name="buscandoRuta">Buscando ruta...</string>
     <string name="dia">Día:</string>
+    <string name="asuntoExcepcion">El asunto no puede ser nulo</string>
+    <string name="fechaNula">La fecha no puede ser nula</string>
+    <string name="anyoMenor">El año elegido no puede ser menor al actual</string>
+    <string name="mesMenor">El mes elegido no puede ser menor al actual</string>
+    <string name="diaMenor">El día elegido no puede ser menor al actual</string>
+    <string name="horaNula">La hora no puede ser nula</string>
+    <string name="horaMenor">La hora elegida no puede ser menor a la actual</string>
+    <string name="origenExcepcion">No se ha seleccionado ningún origen</string>
+    <string name="destinoExcepcion">No se ha seleccionado ningún destino</string>
+    <string name="fechaMenor">La fecha de la alarma no puede ser menor a la actual (es imposible llegar a tiempo)</string>
+    <string name="advertencia">Advertencia</string>
+    <string name="error">Error en la aplicación</string>
+    <string name="cancelar">Cancelar</string>
+    <string name="confirmar">Confirmar</string>
+    <string name="modificar">Una vez se cree la tarea no se podrá modificar. ¿Está seguro de continuar?</string>
+    <string name="puntosSeleccionar">Faltan puntos por seleccionar</string>
+    <string name="tareaEliminada">La tarea ha sido eliminada correctamente</string>
+
 </resources>

@@ -36,4 +36,21 @@
     <string name="aLas">at</string>
     <string name="buscandoRuta">Finding route...</string>
     <string name="dia">Date:</string>
+    <string name="asuntoExcepcion">The subject cannot be null</string>
+    <string name="fechaNula">The date cannot be null</string>
+    <string name="anyoMenor">The chosen year cannot be less than the current one</string>
+    <string name="mesMenor">The chosen month cannot be less than the current one</string>
+    <string name="diaMenor">The chosen day cannot be less than the current one</string>
+    <string name="horaNula">The hour cannot be null</string>
+    <string name="horaMenor">The chosen time cannot be less than the current one</string>
+    <string name="origenExcepcion">No origin selected</string>
+    <string name="destinoExcepcion">No destination selected</string>
+    <string name="fechaMenor">The alarm date cannot be less than the current one (it is impossible to arrive on time)</string>
+    <string name="advertencia">Warning</string>
+    <string name="error">Application error</string>
+    <string name="cancelar">Cancel</string>
+    <string name="confirmar">Confirm</string>
+    <string name="modificar">Once the task is created, it cannot be modified. Are you sure to continue?</string>
+    <string name="puntosSeleccionar">Points missing to select</string>
+    <string name="tareaEliminada">Task has been successfully removed</string>
 </resources>
