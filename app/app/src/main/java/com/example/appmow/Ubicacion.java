@@ -67,6 +67,7 @@ import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Locale;
 
 public class Ubicacion extends AppCompatActivity  implements GoogleMap.OnMapClickListener,
         OnMapReadyCallback, RoutingListener {
@@ -128,7 +129,7 @@ public class Ubicacion extends AppCompatActivity  implements GoogleMap.OnMapClic
         continuar.setOnClickListener(new View.OnClickListener() {
                                          public void onClick(View v) {
                                              if (origen == null || destino == null) {
-                                                 Toast.makeText(getApplicationContext(), "Faltan puntos por seleccionar", Toast.LENGTH_SHORT).show();
+                                                 Toast.makeText(getApplicationContext(), R.string.puntosSeleccionar, Toast.LENGTH_SHORT).show();
                                              } else {
                                                  Intent data = new Intent();
                                                  data.putExtra("origen", origen);
@@ -146,9 +147,16 @@ public class Ubicacion extends AppCompatActivity  implements GoogleMap.OnMapClic
         );
 
         List<String> listaTransportes = new ArrayList<>();
-        listaTransportes.add("Andando");
-        listaTransportes.add("Vehiculo");
-        listaTransportes.add("Bicicleta");
+        if(Locale.getDefault().getLanguage().equals("es")){
+            listaTransportes.add("Andando");
+            listaTransportes.add("Vehiculo");
+            listaTransportes.add("Bicicleta");
+        } else {
+            listaTransportes.add("Walking");
+            listaTransportes.add("Vehicle");
+            listaTransportes.add("Bicycle");
+        }
+
 
         ArrayAdapter<String> adapter = new ArrayAdapter<>(this, R.layout.support_simple_spinner_dropdown_item, listaTransportes);
         transportes.setAdapter(adapter);
@@ -351,12 +359,12 @@ public class Ubicacion extends AppCompatActivity  implements GoogleMap.OnMapClic
 
     private String parseMode(String mode) {
 
-        if(mode.equals("Andando")){
+        if(mode.equals("Andando") || mode.equals("Walking")){
             mode = "walking";
-        } else if (mode.equals("Vehiculo")){
+        } else if (mode.equals("Vehiculo") || mode.equals("Vehicle")){
             mode = "driving";
         }
-        else if(mode.equals("Bicicleta")){
+        else if(mode.equals("Bicicleta") || mode.equals("Bicycle")){
             mode = "bicycling";
         }
         return mode;
